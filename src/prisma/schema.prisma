@@ -12,3 +12,144 @@ model User {
   name  String
   email String @unique
 }
+
+model Seized_Items {
+  item_id          BigInt    @id @default(autoincrement())
+  case_id          BigInt
+  item_category    ItemCategory
+  sub_category     String    @db.VarChar(50)
+  item_description String
+  seized_date      DateTime
+  seized_location  String    @db.VarChar(255)
+  seizing_officer  String    @db.VarChar(100)
+  current_status   ItemStatus
+  release_date     DateTime?
+  released_to      String?   @db.VarChar(100)
+  remarks          String?
+  Seized_Mobiles   Seized_Mobiles[]
+  Jewelry          Jewelry[]
+  Vehicles         Vehicles[]
+  Documents        Documents[]
+}
+
+enum ItemCategory {
+  Jewelry
+  Vehicle
+  Electronics
+  Mobile
+  Documents
+  Drugs
+  Other
+}
+
+enum ItemStatus {
+  InCustody
+  Released
+  Disposed
+  Transferred
+}
+
+model Seized_Mobiles {
+  item_id          BigInt    @id
+  brand            String    @db.VarChar(50)
+  model            String    @db.VarChar(50)
+  IMEI_no_1        String    @unique @db.VarChar(15)
+  IMEI_no_2        String?   @unique @db.VarChar(15)
+  serial_no        String    @unique @db.VarChar(50)
+  mobile_condition MobileCondition
+  charger_available Boolean
+  sim_card_status  SimCardStatus
+  network_operator String?   @db.VarChar(50)
+  locked_status    LockedStatus
+  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
+}
+
+enum MobileCondition {
+  Working
+  Damaged
+  Unknown
+}
+
+enum SimCardStatus {
+  Present
+  Removed
+  NotApplicable
+}
+
+enum LockedStatus {
+  Locked
+  Unlocked
+  Unknown
+}
+
+model Jewelry {
+  item_id          BigInt    @id
+  metal_type       MetalType
+  weight_gm        Decimal   @db.Decimal(10,2)
+  karat            String    @db.VarChar(10)
+  jewelry_type     String    @db.VarChar(50)
+  hallmark_present Boolean
+  estimated_value  Decimal   @db.Decimal(12,2)
+  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
+}
+
+enum MetalType {
+  Gold
+  Silver
+  Diamond
+  Platinum
+  Other
+}
+
+model Vehicles {
+  item_id          BigInt    @id
+  vehicle_type     VehicleType
+  make             String    @db.VarChar(50)
+  model            String    @db.VarChar(50)
+  color            String    @db.VarChar(30)
+  registration_no  String?   @unique @db.VarChar(20)
+  chassis_no       String?   @unique @db.VarChar(30)
+  engine_no        String?   @unique @db.VarChar(30)
+  owner_name       String    @db.VarChar(100)
+  owner_contact    String    @db.VarChar(15)
+  fuel_type        FuelType
+  RC_available     Boolean
+  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
+}
+
+enum VehicleType {
+  Bike
+  Car
+  Truck
+  Bus
+  Auto
+  Other
+}
+
+enum FuelType {
+  Petrol
+  Diesel
+  Electric
+  CNG
+  Other
+}
+
+model Documents {
+  item_id          BigInt    @id
+  document_type    DocumentType
+  holder_name      String    @db.VarChar(100)
+  document_number  String    @unique @db.VarChar(50)
+  issue_date       DateTime
+  expiry_date      DateTime?
+  issuing_authority String   @db.VarChar(100)
+  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
+}
+
+enum DocumentType {
+  Passport
+  License
+  Aadhar
+  PropertyPapers
+  Cheque
+  Other
+}
