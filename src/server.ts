@@ -1,17 +1,6 @@
-import express, { Request, Response } from 'express';
+import app from './app';
+import { PORT } from './config/env';
 
-const app = express();
-const port = 3000;
-
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// Define a simple route
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, world!');
-});
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
