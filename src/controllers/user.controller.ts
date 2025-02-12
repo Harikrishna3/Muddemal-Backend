@@ -9,6 +9,6 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const user = await gU(id);
+    const user = await gU(Number(id));
     res.status(200).json(user);
 };
