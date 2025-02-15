@@ -11,7 +11,7 @@ export const createCase = async (data: {
     closure_date?: Date;
     userId: string;
 }) => {
-    return prisma.caseReg.create({
+    const resData = await prisma.caseReg.create({
         data: {     
             case_number: data.case_number,
             case_description: data.case_description,
@@ -23,6 +23,11 @@ export const createCase = async (data: {
             userId: data.userId,
         },
     });
+    return {
+        ...resData,
+        id: resData.case_id.toString(), // assuming 'case_id' is the BigInt field
+        case_id: resData.case_id.toString(), // convert BigInt to string
+    };
 };
 
 export const getCase = async (id: string) => {
