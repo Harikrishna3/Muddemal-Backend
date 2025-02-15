@@ -8,14 +8,60 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
+  id              String         @id @default(uuid())
+  name            String
+  email           String         @unique
+  password        String
+  role            Role           @default(USER) // Role-based access (ADMIN or USER)
+  policeStationId String?
+  policeStation   PoliceStation? @relation(fields: [policeStationId], references: [id])
+  cases           CaseReg[]      // One-to-many relationship with cases
+  logs            Logs[]  
+  createdAt       DateTime       @default(now())
+ updatedAt DateTime @updatedAt @default(now())
 }
 
-model Seized_Items {
+model PoliceStation {
+  id        String  @id @default(uuid()) // Unique identifier
+  name      String
+  region    String
+  address   String
+  state     String
+  district  String
+  taluka    String
+  createdAt DateTime @default(now())     // Timestamp for record creation
+ updatedAt DateTime @updatedAt @default(now())
+
+  users    User[]  // One-to-many relationship with users
+    cases    CaseReg[]   // Reverse relation: one police station can have many cases
+}
+
+model CaseReg {
+  case_id               BigInt  @id @default(autoincrement())
+  case_number           String  @unique
+  case_description      String
+  policeStationId       String
+  policeStation         PoliceStation @relation(fields: [policeStationId], references: [id])
+  investigating_officer String  @db.VarChar(100)
+  case_status           CaseStatus
+  filing_date           DateTime
+  closure_date          DateTime?
+
+  userId                String
+  user                  User @relation(fields: [userId], references: [id])
+
+  // Relationships
+  seizedItems           SeizedItems[]
+  courtCases            Court[]
+
+  createdAt             DateTime @default(now())
+ updatedAt DateTime @updatedAt @default(now())
+}
+
+model SeizedItems {
   item_id          BigInt    @id @default(autoincrement())
   case_id          BigInt
+
   item_category    ItemCategory
   sub_category     String    @db.VarChar(50)
   item_description String
@@ -26,12 +72,133 @@ model Seized_Items {
   release_date     DateTime?
   released_to      String?   @db.VarChar(100)
   remarks          String?
-  Seized_Mobiles   Seized_Mobiles[]
-  Jewelry          Jewelry[]
-  Vehicles         Vehicles[]
-  Documents        Documents[]
+
+  // Jewelry Fields
+  jewelryType       String?
+  jewelryWeight     Float?
+  purityLevel       String?
+  quantity          Int?
+  weight            Float?
+  estimatedValue    Float?
+
+  // Electronics & Vehicles
+  brandModel        String?
+  serialNumber      String?
+  imeiNumber        String?
+
+  vehicleType       String?
+  registrationNumber String?
+  chassisNumber     String?
+  engineNumber      String?
+  vehicleOwner      String?
+
+  // Documents
+  documentType      String?
+  documentNumber    String?
+  issuingAuthority  String?
+  forgeryDetected   Boolean?
+
+  // Currency
+  currencyType      String?
+  totalAmount       Float?
+  counterfeit       Boolean?
+
+  // Drugs & Weapons
+  drugType          String?
+  drugQuantity      Float?
+  weaponType        String?
+  weaponModel       String?
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  // Relationships
+  images           Image[]
+  vehicleDocuments VehicleDocument[]
+  serialNumbers    SerialNumber[]
+
+  // Foreign key linking to Case
+  case             CaseReg  @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
 }
 
+model Court {
+  id                     BigInt   @id @default(autoincrement())
+  order_number           String   @unique
+  court_type             String
+  court_name             String
+  courtCaseNumber        String   @unique
+  court_policestation_info String
+  court_order_info       String
+  case_id                BigInt   // Foreign key to Case
+  hearing_date           DateTime?
+  verdict_date           DateTime?
+  verdict_summary        String?
+  judge_name             String?
+  status                 CourtStatus
+
+  createdAt              DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  // Relation to Case (Many court records can belong to one case)
+  case                   CaseReg @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
+}
+
+// Supporting Models
+model Image {
+  id       BigInt  @id @default(autoincrement())
+  item_id  BigInt
+  url      String  @db.Text
+
+  // Relation to Seized_Items
+  seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
+}
+
+model VehicleDocument {
+  id       BigInt  @id @default(autoincrement())
+  item_id  BigInt
+  doc_url  String  @db.Text
+
+  // Relation to Seized_Items
+  seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
+}
+
+model SerialNumber {
+  id       BigInt  @id @default(autoincrement())
+  item_id  BigInt
+  serial   String
+
+  // Relation to Seized_Items
+  seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
+}
+
+model Logs {
+  id           BigInt  @id @default(autoincrement())
+  entityType   EntityType  // Case, SeizedItem, Court
+  entityId     BigInt      // ID of the related entity
+  actionType   ActionType  // Created, Updated, Deleted
+  changedData  Json?       // Stores old/new data in JSON format
+  userId       String      // Who performed the action
+  user         User        @relation(fields: [userId], references: [id])
+  timestamp    DateTime    @default(now())
+}
+
+// Enums for Logs
+enum EntityType {
+  CaseReg
+  SeizedItem
+  Court
+}
+
+enum ActionType {
+  Created
+  Updated
+  Deleted
+}
+
+
+
+// Enums
 enum ItemCategory {
   Jewelry
   Vehicle
@@ -49,107 +216,19 @@ enum ItemStatus {
   Transferred
 }
 
-model Seized_Mobiles {
-  item_id          BigInt    @id
-  brand            String    @db.VarChar(50)
-  model            String    @db.VarChar(50)
-  IMEI_no_1        String    @unique @db.VarChar(15)
-  IMEI_no_2        String?   @unique @db.VarChar(15)
-  serial_no        String    @unique @db.VarChar(50)
-  mobile_condition MobileCondition
-  charger_available Boolean
-  sim_card_status  SimCardStatus
-  network_operator String?   @db.VarChar(50)
-  locked_status    LockedStatus
-  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
+enum CourtStatus {
+  Pending
+  Closed
+  UnderAppeal
 }
 
-enum MobileCondition {
-  Working
-  Damaged
-  Unknown
+enum CaseStatus {
+  Open
+  Closed
+  Investigation
 }
 
-enum SimCardStatus {
-  Present
-  Removed
-  NotApplicable
-}
-
-enum LockedStatus {
-  Locked
-  Unlocked
-  Unknown
-}
-
-model Jewelry {
-  item_id          BigInt    @id
-  metal_type       MetalType
-  weight_gm        Decimal   @db.Decimal(10,2)
-  karat            String    @db.VarChar(10)
-  jewelry_type     String    @db.VarChar(50)
-  hallmark_present Boolean
-  estimated_value  Decimal   @db.Decimal(12,2)
-  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
-}
-
-enum MetalType {
-  Gold
-  Silver
-  Diamond
-  Platinum
-  Other
-}
-
-model Vehicles {
-  item_id          BigInt    @id
-  vehicle_type     VehicleType
-  make             String    @db.VarChar(50)
-  model            String    @db.VarChar(50)
-  color            String    @db.VarChar(30)
-  registration_no  String?   @unique @db.VarChar(20)
-  chassis_no       String?   @unique @db.VarChar(30)
-  engine_no        String?   @unique @db.VarChar(30)
-  owner_name       String    @db.VarChar(100)
-  owner_contact    String    @db.VarChar(15)
-  fuel_type        FuelType
-  RC_available     Boolean
-  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
-}
-
-enum VehicleType {
-  Bike
-  Car
-  Truck
-  Bus
-  Auto
-  Other
-}
-
-enum FuelType {
-  Petrol
-  Diesel
-  Electric
-  CNG
-  Other
-}
-
-model Documents {
-  item_id          BigInt    @id
-  document_type    DocumentType
-  holder_name      String    @db.VarChar(100)
-  document_number  String    @unique @db.VarChar(50)
-  issue_date       DateTime
-  expiry_date      DateTime?
-  issuing_authority String   @db.VarChar(100)
-  Seized_Items     Seized_Items @relation(fields: [item_id], references: [item_id])
-}
-
-enum DocumentType {
-  Passport
-  License
-  Aadhar
-  PropertyPapers
-  Cheque
-  Other
+enum Role {
+  ADMIN
+  USER
 }
