@@ -52,7 +52,12 @@ model CaseReg {
   year                  Int           @default(2025)
   userId                String
   user                  User          @relation(fields: [userId], references: [id])
-
+  acts                  Json?
+   acquired_date   DateTime @default(now())
+  case_date       DateTime @default(now())
+  court_order     String   @default("Pending")
+  crime_number     String   @default("Unknown")
+  guilty_details  String   @default("Not specified")
   // Relationships
   seizedItems SeizedItems[]
   courtCases  Court[]
@@ -61,7 +66,7 @@ model CaseReg {
   updatedAt DateTime @default(now()) @updatedAt
 }
 
-model SeizedItems {
+model SeizedItems { 
   item_id String @id @default(uuid())
   case_id String
 
@@ -233,3 +238,5 @@ enum Role {
   ADMIN
   USER
 }
+
+ 
