@@ -46,15 +46,15 @@ model CaseReg {
   policeStation         PoliceStation @relation(fields: [policeStationId], references: [id])
   investigating_officer String        @db.VarChar(100)
   case_status           CaseStatus
-  filing_date           DateTime
-  closure_date          DateTime?
+  filing_date           String
+  closure_date          String?
   region                String        @default("default_region")
   year                  Int           @default(2025)
   userId                String
   user                  User          @relation(fields: [userId], references: [id])
   acts                  Json?
-   acquired_date   DateTime @default(now())
-  case_date       DateTime @default(now())
+   acquired_date   String 
+  case_date       String 
   court_order     String   @default("Pending")
   crime_number     String   @default("Unknown")
   guilty_details  String   @default("Not specified")
@@ -73,11 +73,11 @@ model SeizedItems {
   item_category    ItemCategory
   sub_category     String       @db.VarChar(50)
   item_description String
-  seized_date      DateTime
+  seized_date      String
   seized_location  String       @db.VarChar(255)
   seizing_officer  String       @db.VarChar(100)
   current_status   ItemStatus
-  release_date     DateTime?
+  release_date     String?
   released_to      String?      @db.VarChar(100)
   remarks          String?
 
@@ -139,8 +139,8 @@ model Court {
   court_policestation_info String
   court_order_info         String
   case_id                  String // Foreign key to Case
-  hearing_date             DateTime?
-  verdict_date             DateTime?
+  hearing_date             String?
+  verdict_date             String?
   verdict_summary          String?
   judge_name               String?
   status                   CourtStatus

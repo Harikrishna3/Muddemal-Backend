@@ -9,19 +9,19 @@ export const createCase = async (req: Request, res: Response) => {
             policeStationId: string;
             investigating_officer: string;
             case_status: CaseStatus;
-            filing_date: Date;
-            closure_date?: Date;
+            filing_date: string;
+            closure_date?: string;
             userId: string;
             seize_item_info: [
                   {case_id: string;
                   item_category: ItemCategory;
                   sub_category: string;
                   item_description: string;
-                  seized_date: Date;
+                  seized_date: string;
                   seized_location: string;
                   seizing_officer: string;
                   current_status: ItemStatus;
-                  release_date: Date;
+                  release_date: string;
                   released_to: string;
                   remarks: string;}
             ];
@@ -55,8 +55,8 @@ export const updateCase = async (req: Request, res: Response) => {
         policeStationId: string;
         investigating_officer: string;
         case_status: CaseStatus; // Assuming CaseStatus is a union type
-        filing_date: Date;
-        closure_date: Date;
+        filing_date: string;
+        closure_date: string;
         userId: string;
     };
     const response = await UC({

@@ -4,7 +4,7 @@ import prisma from '../config/prisma';
 const applyMiddleware = (prisma: PrismaClient) => {
   prisma.$use(async (params, next) => {
     const { model, action, args } = params;
-    console.log(`Model: ${model}, Action: ${action}`);
+    // console.log(`Model: ${model}, Action: ${action}`);
     
     const trackedModels = ['CaseReg', 'SeizedItems', 'Court'];
 
@@ -17,13 +17,13 @@ const applyMiddleware = (prisma: PrismaClient) => {
     if (action === 'create') {
       actionType = ActionType.Created;
       changedData = args.data;
-      console.log(changedData, "changedData",actionType, "actionType", entityId, "entityId");
+    //   console.log(changedData, "changedData",actionType, "actionType", entityId, "entityId");
       
       const result = await next(params);
-      console.log("result", result);
+    //   console.log("result", result);
       
       entityId = result?.item_id ?? null;
-      console.log("entityId", entityId);
+    //   console.log("entityId", entityId);
       
       if (entityId !== null) {
         await logAction(mapModelToEntityType(model!), entityId, actionType, changedData);
@@ -86,7 +86,7 @@ async function logAction(
   try {
     // Ensure entityId is safely converted
     // const safeEntityId = BigInt(entityId);
-    console.log("Logging action for", model, entityId, actionType, changedData);
+    // console.log("Logging action for", model, entityId, actionType, changedData);
     
     await prisma.logs.create({
       data: {
@@ -98,7 +98,7 @@ async function logAction(
       },
     });
 
-    console.log(`Log recorded for ${model} - Action: ${actionType}`);
+    // console.log(`Log recorded for ${model} - Action: ${actionType}`);
   } catch (error) {
     console.error("Error logging action:", error);
   }

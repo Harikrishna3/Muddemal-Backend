@@ -6,11 +6,11 @@ export const createSeizedItem = async (data: {
     item_category: ItemCategory;
     sub_category: string;
     item_description: string;
-    seized_date: Date;
+    seized_date: string;
     seized_location: string;
     seizing_officer: string;
     current_status: ItemStatus;
-    release_date: Date;
+    release_date: string;
     released_to: string;
     remarks: string;
 }) => {
