@@ -9,6 +9,7 @@ export const createCaseAndSeizedItem = async (data: {
     case_status: CaseStatus;
     filing_date:string;
     closure_date?: string;
+    acquired_date: string;
     userId: string;
     seize_item_info: [
           {case_id: string;

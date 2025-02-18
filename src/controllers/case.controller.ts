@@ -3,7 +3,7 @@ import { createCaseAndSeizedItem as CC , getCase as GC, updateCase as UC} from '
 import { Request, Response } from 'express';
 
 export const createCase = async (req: Request, res: Response) => {
-    const { case_number, case_description, policeStationId, investigating_officer, case_status, filing_date, closure_date, userId } = req.body as {
+    const { case_number, case_description, policeStationId, acquired_date,investigating_officer, case_status, filing_date, closure_date, userId } = req.body as {
          case_number: string;
             case_description: string;
             policeStationId: string;
@@ -11,6 +11,7 @@ export const createCase = async (req: Request, res: Response) => {
             case_status: CaseStatus;
             filing_date: string;
             closure_date?: string;
+            acquired_date: string;
             userId: string;
             seize_item_info: [
                   {case_id: string;
@@ -35,6 +36,7 @@ export const createCase = async (req: Request, res: Response) => {
         case_status,
         filing_date,
         closure_date,
+        acquired_date,
         userId,
         seize_item_info: req.body.seize_item_info,
     });
