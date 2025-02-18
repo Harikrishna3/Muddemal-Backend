@@ -4,19 +4,27 @@ import prisma from '../config/prisma';
 const applyMiddleware = (prisma: PrismaClient) => {
   prisma.$use(async (params, next) => {
     const { model, action, args } = params;
+    console.log(`Model: ${model}, Action: ${action}`);
+    
     const trackedModels = ['CaseReg', 'SeizedItems', 'Court'];
 
     if (!trackedModels.includes(model!)) return next(params);
 
     let entityId: string | null = null;
     let changedData: any = null;
-    let actionType: ActionType | null = null;
+    let actionType: ActionType | null = action === 'create' ? ActionType.Created : action === 'update' ? ActionType.Updated : action === 'delete' ? ActionType.Deleted : null;
 
     if (action === 'create') {
       actionType = ActionType.Created;
       changedData = args.data;
+      console.log(changedData, "changedData",actionType, "actionType", entityId, "entityId");
+      
       const result = await next(params);
-      entityId = result?.id ?? null;
+      console.log("result", result);
+      
+      entityId = result?.item_id ?? null;
+      console.log("entityId", entityId);
+      
       if (entityId !== null) {
         await logAction(mapModelToEntityType(model!), entityId, actionType, changedData);
       }
@@ -78,14 +86,15 @@ async function logAction(
   try {
     // Ensure entityId is safely converted
     // const safeEntityId = BigInt(entityId);
-
+    console.log("Logging action for", model, entityId, actionType, changedData);
+    
     await prisma.logs.create({
       data: {
         entityType: model,
         entityId, 
         actionType,
         changedData,
-        userId: "SYSTEM",
+        userId: "802f9359-61d7-432d-a8ed-5f1d9f1e6527",
       },
     });
 
