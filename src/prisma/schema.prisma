@@ -14,104 +14,107 @@ model User {
   password        String
   role            Role           @default(USER) // Role-based access (ADMIN or USER)
   policeStationId String?
+  designation     String         @default("default_designation")
+  mobile          String         @default("000-000-0000")
   policeStation   PoliceStation? @relation(fields: [policeStationId], references: [id])
-  cases           CaseReg[]      // One-to-many relationship with cases
-  logs            Logs[]  
+  cases           CaseReg[] // One-to-many relationship with cases
+  logs            Logs[]
   createdAt       DateTime       @default(now())
- updatedAt DateTime @updatedAt @default(now())
+  updatedAt       DateTime       @default(now()) @updatedAt
 }
 
 model PoliceStation {
-  id        String  @id @default(uuid()) // Unique identifier
+  id        String   @id @default(uuid()) // Unique identifier
   name      String
   region    String
   address   String
   state     String
   district  String
   taluka    String
-  createdAt DateTime @default(now())     // Timestamp for record creation
- updatedAt DateTime @updatedAt @default(now())
+  createdAt DateTime @default(now()) // Timestamp for record creation
+  updatedAt DateTime @default(now()) @updatedAt
 
-  users    User[]  // One-to-many relationship with users
-    cases    CaseReg[]   // Reverse relation: one police station can have many cases
+  users User[] // One-to-many relationship with users
+  cases CaseReg[] // Reverse relation: one police station can have many cases
 }
 
 model CaseReg {
-  case_id               BigInt  @id @default(autoincrement())
-  case_number           String  @unique
+  case_id               String        @id @default(uuid())
+  case_number           String        @unique
   case_description      String
   policeStationId       String
   policeStation         PoliceStation @relation(fields: [policeStationId], references: [id])
-  investigating_officer String  @db.VarChar(100)
+  investigating_officer String        @db.VarChar(100)
   case_status           CaseStatus
   filing_date           DateTime
   closure_date          DateTime?
-
+  region                String        @default("default_region")
+  year                  Int           @default(2025)
   userId                String
-  user                  User @relation(fields: [userId], references: [id])
+  user                  User          @relation(fields: [userId], references: [id])
 
   // Relationships
-  seizedItems           SeizedItems[]
-  courtCases            Court[]
+  seizedItems SeizedItems[]
+  courtCases  Court[]
 
-  createdAt             DateTime @default(now())
- updatedAt DateTime @updatedAt @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model SeizedItems {
-  item_id          BigInt    @id @default(autoincrement())
-  case_id          BigInt
+  item_id String @id @default(uuid())
+  case_id String
 
   item_category    ItemCategory
-  sub_category     String    @db.VarChar(50)
+  sub_category     String       @db.VarChar(50)
   item_description String
   seized_date      DateTime
-  seized_location  String    @db.VarChar(255)
-  seizing_officer  String    @db.VarChar(100)
+  seized_location  String       @db.VarChar(255)
+  seizing_officer  String       @db.VarChar(100)
   current_status   ItemStatus
   release_date     DateTime?
-  released_to      String?   @db.VarChar(100)
+  released_to      String?      @db.VarChar(100)
   remarks          String?
 
   // Jewelry Fields
-  jewelryType       String?
-  jewelryWeight     Float?
-  purityLevel       String?
-  quantity          Int?
-  weight            Float?
-  estimatedValue    Float?
+  jewelryType    String?
+  jewelryWeight  Float?
+  purityLevel    String?
+  quantity       Int?
+  weight         Float?
+  estimatedValue Float?
 
   // Electronics & Vehicles
-  brandModel        String?
-  serialNumber      String?
-  imeiNumber        String?
+  brandModel   String?
+  serialNumber String?
+  imeiNumber   String?
 
-  vehicleType       String?
+  vehicleType        String?
   registrationNumber String?
-  chassisNumber     String?
-  engineNumber      String?
-  vehicleOwner      String?
+  chassisNumber      String?
+  engineNumber       String?
+  vehicleOwner       String?
 
   // Documents
-  documentType      String?
-  documentNumber    String?
-  issuingAuthority  String?
-  forgeryDetected   Boolean?
+  documentType     String?
+  documentNumber   String?
+  issuingAuthority String?
+  forgeryDetected  Boolean?
 
   // Currency
-  currencyType      String?
-  totalAmount       Float?
-  counterfeit       Boolean?
+  currencyType String?
+  totalAmount  Float?
+  counterfeit  Boolean?
 
   // Drugs & Weapons
-  drugType          String?
-  drugQuantity      Float?
-  weaponType        String?
-  weaponModel       String?
+  drugType     String?
+  drugQuantity Float?
+  weaponType   String?
+  weaponModel  String?
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   // Relationships
   images           Image[]
@@ -119,68 +122,68 @@ model SeizedItems {
   serialNumbers    SerialNumber[]
 
   // Foreign key linking to Case
-  case             CaseReg  @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
+  case CaseReg @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
 }
 
 model Court {
-  id                     BigInt   @id @default(autoincrement())
-  order_number           String   @unique
-  court_type             String
-  court_name             String
-  courtCaseNumber        String   @unique
+  id                       String      @id @default(uuid())
+  order_number             String      @unique
+  court_type               String
+  court_name               String
+  courtCaseNumber          String      @unique
   court_policestation_info String
-  court_order_info       String
-  case_id                BigInt   // Foreign key to Case
-  hearing_date           DateTime?
-  verdict_date           DateTime?
-  verdict_summary        String?
-  judge_name             String?
-  status                 CourtStatus
+  court_order_info         String
+  case_id                  String // Foreign key to Case
+  hearing_date             DateTime?
+  verdict_date             DateTime?
+  verdict_summary          String?
+  judge_name               String?
+  status                   CourtStatus
 
-  createdAt              DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   // Relation to Case (Many court records can belong to one case)
-  case                   CaseReg @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
+  case CaseReg @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
 }
 
 // Supporting Models
 model Image {
-  id       BigInt  @id @default(autoincrement())
-  item_id  BigInt
-  url      String  @db.Text
+  id      String @id @default(uuid())
+  item_id String
+  url     String @db.Text
 
   // Relation to Seized_Items
   seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
 }
 
 model VehicleDocument {
-  id       BigInt  @id @default(autoincrement())
-  item_id  BigInt
-  doc_url  String  @db.Text
+  id      String @id @default(uuid())
+  item_id String
+  doc_url String @db.Text
 
   // Relation to Seized_Items
   seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
 }
 
 model SerialNumber {
-  id       BigInt  @id @default(autoincrement())
-  item_id  BigInt
-  serial   String
+  id      String @id @default(uuid())
+  item_id String
+  serial  String
 
   // Relation to Seized_Items
   seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
 }
 
 model Logs {
-  id           BigInt  @id @default(autoincrement())
-  entityType   EntityType  // Case, SeizedItem, Court
-  entityId     BigInt      // ID of the related entity
-  actionType   ActionType  // Created, Updated, Deleted
-  changedData  Json?       // Stores old/new data in JSON format
-  userId       String      // Who performed the action
-  user         User        @relation(fields: [userId], references: [id])
-  timestamp    DateTime    @default(now())
+  id          String     @id @default(uuid())
+  entityType  EntityType // Case, SeizedItem, Court
+  entityId    String? // ID of the related entity
+  actionType  ActionType // Created, Updated, Deleted
+  changedData Json? // Stores old/new data in JSON format
+  userId      String // Who performed the action
+  user        User       @relation(fields: [userId], references: [id])
+  timestamp   DateTime   @default(now())
 }
 
 // Enums for Logs
@@ -195,8 +198,6 @@ enum ActionType {
   Updated
   Deleted
 }
-
-
 
 // Enums
 enum ItemCategory {

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import  {createUser as US,getUser as gU}from '../services/user.service';
+import  {createUser as CU,getUser as gU}from '../services/user.service';
 
 export const createUser = async (req: Request, res: Response) => {
     const { name, email, role, password,policeStationId } = req.body;
     // const password = 'defaultPassword'; // Add a default password or get it from req.body
-    const user = await US(name, email, password, role, policeStationId);
+    const user = await CU(name, email, password, role, policeStationId);
     res.status(201).json(user);
 };
 

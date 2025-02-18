@@ -2,7 +2,7 @@ import prisma from "../config/prisma";
 import { ItemCategory, ItemStatus } from "@prisma/client";
 
 export const createSeizedItem = async (data: {
-    case_id: number;
+    case_id: string;
     item_category: ItemCategory;
     sub_category: string;
     item_description: string;
@@ -16,7 +16,7 @@ export const createSeizedItem = async (data: {
 }) => {
     const resData = await prisma.seizedItems.create({
         data: {
-            case_id: Number(data.case_id),
+            case_id: data.case_id,
             item_category: data.item_category,
             sub_category: data.sub_category,
             item_description: data.item_description,
@@ -30,8 +30,5 @@ export const createSeizedItem = async (data: {
         },
     });
 
-    return {
-        ...resData,
-        id: resData.item_id.toString(),
-    };
+    return resData;
 }

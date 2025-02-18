@@ -23,11 +23,7 @@ export const createCase = async (data: {
             userId: data.userId,
         },
     });
-    return {
-        ...resData,
-        id: resData.case_id.toString(), // assuming 'case_id' is the BigInt field
-        case_id: resData.case_id.toString(), // convert BigInt to string
-    };
+    return resData;
 };
 
 export const getCase = async (id: string) => {
@@ -63,8 +59,3 @@ export const updateCase = async (data: {
         },
     });
 }
-
-
-// model CaseReg {//seize date,year ,region
-
-// model User {  //mobile , designation
