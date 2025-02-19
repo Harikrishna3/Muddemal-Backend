@@ -21,8 +21,15 @@ ALTER TABLE `Image` ADD COLUMN `Image_item_id_caseReg_fkey` VARCHAR(191) NOT NUL
 -- AlterTable
 ALTER TABLE `SeizedItems` MODIFY `item_category` VARCHAR(191) NOT NULL;
 
--- AddForeignKey
-ALTER TABLE `Image` ADD CONSTRAINT `Image_item_id_caseReg_fkey` FOREIGN KEY (`item_id`) REFERENCES `CaseReg`(`case_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateTable
+CREATE TABLE `QR` (
+    `id` VARCHAR(191) NOT NULL,
+    `seizedItem_Name` VARCHAR(191) NOT NULL,
+    `case_id` VARCHAR(191) NOT NULL,
+    `qr_base64` LONGTEXT NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- RenameIndex
 ALTER TABLE `Image` RENAME INDEX `Image_item_id_fkey` TO `Image_item_id_idx`;

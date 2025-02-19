@@ -61,7 +61,6 @@ model CaseReg {
   // Relationships
   seizedItems           SeizedItems[]
   courtCases            Court[]
-  images                Image[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -70,7 +69,6 @@ model CaseReg {
 model SeizedItems {
   item_id String @id @default(uuid())
   case_id String
-
   item_category    String
   sub_category     String     @db.VarChar(50)
   item_description String
@@ -162,9 +160,6 @@ model Image {
 Image_item_id_caseReg_fkey String
   // Relation to Seized_Items
   seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
-
-  // Relation to CaseReg
-  caseReg CaseReg? @relation(fields: [item_id], references: [case_id], map: "Image_item_id_caseReg_fkey")
 
   @@index([item_id])
 }
