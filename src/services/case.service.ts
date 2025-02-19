@@ -2,6 +2,7 @@ import { CaseStatus, ItemCategory, ItemStatus } from '@prisma/client';
 import prisma from '../config/prisma';
 
 export const createCaseAndSeizedItem = async (data: {
+  year: number;
     case_number: string;
     case_description: string;
     policeStationId: string;
@@ -9,6 +10,7 @@ export const createCaseAndSeizedItem = async (data: {
     case_status: CaseStatus;
     filing_date:string;
     acts: any;
+    court_order: string;
     closure_date?: string;
     acquired_date: string;
     userId: string;
@@ -29,6 +31,7 @@ export const createCaseAndSeizedItem = async (data: {
     try{
     const resData = await prisma.caseReg.create({
         data: {     
+            year: data.year,
             case_number: data.case_number,
             case_description: data.case_description,
             policeStation: {
@@ -41,6 +44,7 @@ export const createCaseAndSeizedItem = async (data: {
             acts: data.acts,
             filing_date: data.filing_date,
             closure_date: data.closure_date,
+            court_order: data.court_order,
             acquired_date: new Date().toISOString(), // Add appropriate value
             case_date: new Date().toISOString(), // Add appropriate value
             user: {

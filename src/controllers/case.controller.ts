@@ -4,14 +4,16 @@ import { Request, Response } from 'express';
 import prisma from '../config/prisma';
 
 export const createCase = async (req: Request, res: Response) => {
-    const { case_number, case_description, policeStationId, acquired_date,investigating_officer, case_status, filing_date, closure_date, userId } = req.body as {
-         case_number: string;
+    const { case_number, case_description,year, court_order,policeStationId, acquired_date,investigating_officer, case_status, filing_date, closure_date, userId } = req.body as {
+         year: number;
+        case_number: string;
             case_description: string;
             policeStationId: string;
             investigating_officer: string;
             case_status: CaseStatus;
             filing_date: string;
             acts: any;
+            court_order: string;
             closure_date?: string;
             acquired_date: string;
             userId: string;
@@ -31,12 +33,14 @@ export const createCase = async (req: Request, res: Response) => {
     };
 try{
     const newCase = await CC({
+        year,
         case_number,
         case_description,
         policeStationId,
         investigating_officer,
         case_status,
         filing_date,
+        court_order: court_order,
         acts: req.body.acts,
         closure_date,
         acquired_date,

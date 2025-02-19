@@ -54,7 +54,6 @@ model CaseReg {
   user                  User          @relation(fields: [userId], references: [id])
   acts                  Json?
   acquired_date         String
-  case_date             String
   court_order           String        @default("Pending")
   crime_number          String        @default("Unknown")
   guilty_details        String        @default("Not specified")
