@@ -1,5 +1,5 @@
 import { CaseStatus, ItemCategory, ItemStatus } from '@prisma/client';
-import { createCaseAndSeizedItem as CC , getCase as GC, updateCase as UC} from '../services/case.service';
+import { createCaseAndSeizedItem as CC , getCase as GC, updateCase as UC, getAllCases as GAC, getCaseStatusCount as GCSC} from '../services/case.service';
 import { Request, Response } from 'express';
 import prisma from '../config/prisma';
 
@@ -60,6 +60,17 @@ export const getCase = async (req: Request, res: Response) => {
     res.status(200).json(caseData);
 }
 
+export const getAllCases = async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    try{
+    const cases = await GAC(userId);
+    res.status(200).json(cases);
+    }
+    catch{
+        res.status(400).json({message: "Error in fetching cases"});
+    }
+}
+
 export const updateCase = async (req: Request, res: Response) => {
     const { case_number, case_description, policeStationId, investigating_officer, case_status, filing_date, closure_date, userId } = req.body as {
         case_number: string;
@@ -89,36 +100,14 @@ export const updateCase = async (req: Request, res: Response) => {
 }
 
 export const getCaseStatusCount = async (req: Request, res: Response) => {
-   try{
-    const caseStatusCount = await prisma.caseReg.groupBy({
-        by: ['case_status'],
-        _count: {
-            case_status: true
-        }
-    });
-
-    const statusCount = {
-        Open_Cases: 0,
-        Closed_Cases: 0,
-        Pending_Cases: 0,
-        Total_Cases: caseStatusCount.reduce((acc, status) => acc + status._count.case_status, 0),
-
-    };
-
-    caseStatusCount.forEach((status) => {
-        if (status.case_status === 'Open') {
-            statusCount.Open_Cases = status._count.case_status;
-        } else if (status.case_status === 'Closed') {
-            statusCount.Closed_Cases = status._count.case_status;
-        } else if (status.case_status === 'Investigation') {
-            statusCount.Pending_Cases = status._count.case_status;
-        }
-    });
-
-    res.status(200).json(statusCount);
-   }
-   catch{
-    res.status(400).json({message: "Error in getting case status count"});
-   }
-}
+    try {
+       const caseStatusCount = await GCSC(req.params.userId);
+       res.status(200).json(caseStatusCount);
+    } catch (error) {
+       console.error("Error fetching case status count:", error);
+       res.status(400).json({ message: "Error in getting case status count" });
+    }
+ };
+ 
+ 
 

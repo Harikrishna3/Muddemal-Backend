@@ -17,13 +17,13 @@ const applyMiddleware = (prisma: PrismaClient) => {
     if (action === 'create') {
       actionType = ActionType.Created;
       changedData = args.data;
-    //   console.log(changedData, "changedData",actionType, "actionType", entityId, "entityId");
+      // console.log(changedData, "changedData",actionType, "actionType", entityId, "entityId");
       
       const result = await next(params);
-    //   console.log("result", result);
+      // console.log("result", result);
       
       entityId = result?.item_id ?? null;
-    //   console.log("entityId", entityId);
+      // console.log("entityId", entityId);
       
       if (entityId !== null) {
         await logAction(mapModelToEntityType(model!), entityId, actionType, changedData);
@@ -94,7 +94,7 @@ async function logAction(
         entityId, 
         actionType,
         changedData,
-        userId: "802f9359-61d7-432d-a8ed-5f1d9f1e6527",
+        userId: "78eb639b-8210-4b8d-9946-122e834f8501",
       },
     });
 

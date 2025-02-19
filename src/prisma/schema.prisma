@@ -11,7 +11,7 @@ model User {
   id              String         @id @default(uuid())
   name            String
   email           String         @unique
-  password        String
+  password        String @db.VarChar(255)
   role            Role           @default(USER) // Role-based access (ADMIN or USER)
   policeStationId String?
   designation     String         @default("default_designation")

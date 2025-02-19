@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { CaseStatus, ItemCategory, ItemStatus } from '@prisma/client';
 import prisma from '../config/prisma';
 
@@ -46,7 +47,6 @@ export const createCaseAndSeizedItem = async (data: {
             closure_date: data.closure_date,
             court_order: data.court_order,
             acquired_date: new Date().toISOString(), // Add appropriate value
-            case_date: new Date().toISOString(), // Add appropriate value
             user: {
                 connect: {
                     id: data.userId,
@@ -93,7 +93,7 @@ export const getCase = async (id: string) => {
     try {
       return await prisma.caseReg.findUnique({
         where: {
-          case_id: id, // Correct field as per your Prisma schema
+          case_id: id, 
         },
       });
     } catch {
@@ -101,6 +101,20 @@ export const getCase = async (id: string) => {
     }
   };
   
+
+export const getAllCases = async (userId:string) => {
+    try {
+      const cases = await prisma.caseReg.findMany({
+        where: { userId },
+        include: {
+          seizedItems: true,
+        },
+      });
+      return cases;
+  }catch{
+    return {message: "Error in fetching cases"};
+  }
+};
 
 export const updateCase = async (data: {
     case_number: string;
@@ -131,3 +145,39 @@ export const updateCase = async (data: {
     return {message: "Error in updating case"};
 }
 }
+
+export const getCaseStatusCount = async (userId: string) => {
+  try {
+
+     const cases = await prisma.caseReg.findMany({
+        where: { userId },
+        select: { case_id: true, case_status: true }
+     });
+
+     let openCases = 0;
+     let closedCases = 0;
+     let pendingCases = 0;
+     const caseIds: string[] = [];
+
+     cases.forEach(({ case_id, case_status }) => {
+        caseIds.push(case_id);
+        if (case_status === 'Open') openCases++;
+        else if (case_status === 'Closed') closedCases++;
+        else if (case_status === 'Investigation') pendingCases++;
+     });
+
+     const seizedItemCount = await prisma.seizedItems.count({
+        where: { case_id: { in: caseIds } }
+     });
+
+     return {
+        Open_Cases: openCases,
+        Closed_Cases: closedCases,
+        Pending_Cases: pendingCases,
+        Total_Cases: cases.length,
+        Seized_Items: seizedItemCount
+     };
+  } catch (error) {
+     return {message: "Error in getting case status count"};
+  }
+};
