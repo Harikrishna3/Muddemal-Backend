@@ -169,6 +169,14 @@ Image_item_id_caseReg_fkey String
   @@index([item_id])
 }
 
+model QR {
+  id      String @id @default(uuid())
+  seizedItem_Name String
+  case_id String
+  qr_base64 String @db.LongText
+
+}
+
 model VehicleDocument {
   id      String @id @default(uuid())
   item_id String

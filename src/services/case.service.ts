@@ -8,6 +8,7 @@ export const createCaseAndSeizedItem = async (data: {
     investigating_officer: string;
     case_status: CaseStatus;
     filing_date:string;
+    acts: any;
     closure_date?: string;
     acquired_date: string;
     userId: string;
@@ -37,6 +38,7 @@ export const createCaseAndSeizedItem = async (data: {
             },
             investigating_officer: data.investigating_officer,
             case_status: data.case_status,
+            acts: data.acts,
             filing_date: data.filing_date,
             closure_date: data.closure_date,
             acquired_date: new Date().toISOString(), // Add appropriate value
@@ -76,22 +78,25 @@ export const createCaseAndSeizedItem = async (data: {
     
     return {resData,allResData};
     }
-    catch{
-        return {message: "Error in creating case"};
+    catch(error){
+      console.log(error,"error");
+      
+        return {message: "Error in creating case", error};
     }
 };
 
 export const getCase = async (id: string) => {
-    try{
-    return prisma.caseReg.findUnique({
+    try {
+      return await prisma.caseReg.findUnique({
         where: {
-            case_number: id,
+          case_id: id, // Correct field as per your Prisma schema
         },
-    });
-}catch{
-    return {message: "Case not found"};
-}
-};
+      });
+    } catch {
+      return { message: "Case not found" };
+    }
+  };
+  
 
 export const updateCase = async (data: {
     case_number: string;
@@ -106,7 +111,7 @@ export const updateCase = async (data: {
     try{
     return prisma.caseReg.update({
         where: {
-            case_number: data.case_number,
+            case_id: data.case_number,
         },
         data: {
             case_description: data.case_description,

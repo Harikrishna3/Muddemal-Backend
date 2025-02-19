@@ -12,9 +12,13 @@ export const login = async(req:Request, res:Response) =>{
     });
     let policeStation = null;
     if(user && user.policeStationId){
-         policeStation = await prisma.policeStation.findUnique({
+        policeStation = await prisma.policeStation.findUnique({
             where: {
-                id: user.policeStationId
+            id: user.policeStationId
+            },
+            select: {
+            id: true,
+            name: true
             }
         });
     }
