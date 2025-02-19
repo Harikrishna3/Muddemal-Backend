@@ -27,7 +27,7 @@ export const createCase = async (req: Request, res: Response) => {
                   remarks: string;}
             ];
     };
-
+try{
     const newCase = await CC({
         case_number,
         case_description,
@@ -42,6 +42,9 @@ export const createCase = async (req: Request, res: Response) => {
     });
 
     res.status(201).json(newCase);
+}catch{
+    res.status(400).json({message: "Error in creating case"});
+}
 };
 
 export const getCase = async (req: Request, res: Response) => {
@@ -61,6 +64,7 @@ export const updateCase = async (req: Request, res: Response) => {
         closure_date: string;
         userId: string;
     };
+    try{
     const response = await UC({
         case_number,
         case_description,
@@ -72,5 +76,8 @@ export const updateCase = async (req: Request, res: Response) => {
         userId,
     });
     res.status(200).json(response);
+}catch{
+    res.status(400).json({message: "Error in updating case"});
+}
 }
 

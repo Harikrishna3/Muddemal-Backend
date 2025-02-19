@@ -25,6 +25,7 @@ export const createCaseAndSeizedItem = async (data: {
           remarks: string;}
     ];
 }) => {
+    try{
     const resData = await prisma.caseReg.create({
         data: {     
             case_number: data.case_number,
@@ -48,8 +49,8 @@ export const createCaseAndSeizedItem = async (data: {
         },
     });
 
-    console.log(resData,"resData");
-    console.log(data.seize_item_info,"data.seize_item_info");
+    // console.log(resData,"resData");
+    // console.log(data.seize_item_info,"data.seize_item_info");
     
 
     const allResData = await Promise.all(
@@ -72,18 +73,24 @@ export const createCaseAndSeizedItem = async (data: {
           return createdItem;
         })
       );
-      
-    console.log(allResData,"allResData");
     
     return {resData,allResData};
+    }
+    catch{
+        return {message: "Error in creating case"};
+    }
 };
 
 export const getCase = async (id: string) => {
+    try{
     return prisma.caseReg.findUnique({
         where: {
             case_number: id,
         },
     });
+}catch{
+    return {message: "Case not found"};
+}
 };
 
 export const updateCase = async (data: {
@@ -96,6 +103,7 @@ export const updateCase = async (data: {
     closure_date?: string;
     userId: string;
 }) => {
+    try{
     return prisma.caseReg.update({
         where: {
             case_number: data.case_number,
@@ -110,4 +118,7 @@ export const updateCase = async (data: {
             userId: data.userId,
         },
     });
+}catch{
+    return {message: "Error in updating case"};
+}
 }

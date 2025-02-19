@@ -4,14 +4,23 @@ import  {createUser as CU,getUser as gU}from '../services/user.service';
 export const createUser = async (req: Request, res: Response) => {
     const { name, email, role, password,policeStationId } = req.body;
     // const password = 'defaultPassword'; // Add a default password or get it from req.body
-    const user = await CU(name, email, password, role, policeStationId);
-    res.status(201).json(user);
+    try{
+
+        const user = await CU(name, email, password, role, policeStationId);
+        res.status(201).json(user);
+    }catch{
+        res.status(400).json({message: "Error in creating user"});
+    }
 };
 
 export const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
+    try{
     const user = await gU(id);
     res.status(200).json(user);
+    }catch{
+        res.status(404).json({message: "User not found"});
+    }
 };
 
 // export const createSeizedMobile = async (req: Request, res: Response) => {

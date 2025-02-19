@@ -8,6 +8,7 @@ export const createPoliceStationService = async (
     district: string,
     taluka: string
 ) => {
+    try{
     return prisma.policeStation.create({
         data: {
             name,
@@ -18,4 +19,7 @@ export const createPoliceStationService = async (
             taluka,
         },
     });
+}catch{
+    throw new Error("Error in creating police station");
+}
 };

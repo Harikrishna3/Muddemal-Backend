@@ -14,6 +14,7 @@ export const createSeizedItem = async (data: {
     released_to: string;
     remarks: string;
 }) => {
+    try{
     const resData = await prisma.seizedItems.create({
         data: {
             case_id: data.case_id,
@@ -31,4 +32,7 @@ export const createSeizedItem = async (data: {
     });
 
     return resData;
+}catch{
+    throw new Error("Error in creating seized item");
+}
 }
