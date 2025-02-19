@@ -6,15 +6,17 @@ import seizedItem from './routes/seizedItem.routes';
 import login from './routes/auth.routes';
 import court from './routes/court.routes';
 
+import cors from 'cors';
 // import { authMiddleware } from './middlewares/auth.middleware';
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 // app.use(authMiddleware);
-
-
-
+app.use('/api/test', (req, res) => {
+    res.send('Hello World');
+});
 app.use('/api', userRoutes);
 app.use('/api', policeStation);
 app.use('/api', caseRoutes);
