@@ -4,6 +4,7 @@ import policeStation from './routes/policeStation.routes';
 import caseRoutes from './routes/caseRoute.routes';
 import seizedItem from './routes/seizedItem.routes';
 import login from './routes/auth.routes';
+import court from './routes/court.routes';
 
 // import { authMiddleware } from './middlewares/auth.middleware';
 
@@ -19,5 +20,6 @@ app.use('/api', policeStation);
 app.use('/api', caseRoutes);
 app.use('/api', seizedItem);
 app.use('/api', login);
+app.use('/api', court);
 
 export default app;

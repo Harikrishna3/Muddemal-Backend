@@ -23,3 +23,16 @@ export const createPoliceStationService = async (
     throw new Error("Error in creating police station");
 }
 };
+
+export const getAllPoliceStationsService = async () => {
+    try{
+    return prisma.policeStation.findMany({
+        select: {
+            id: true,
+            name: true,
+        },
+    });
+}catch{     
+    throw new Error("Error in fetching police stations");
+}
+};

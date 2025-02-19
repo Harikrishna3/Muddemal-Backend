@@ -40,7 +40,7 @@ model PoliceStation {
 
 model CaseReg {
   case_id               String        @id @default(uuid())
-  case_number           String        @unique
+  case_number           String
   case_description      String
   policeStationId       String
   policeStation         PoliceStation @relation(fields: [policeStationId], references: [id])
@@ -53,32 +53,33 @@ model CaseReg {
   userId                String
   user                  User          @relation(fields: [userId], references: [id])
   acts                  Json?
-   acquired_date   String 
-  case_date       String 
-  court_order     String   @default("Pending")
-  crime_number     String   @default("Unknown")
-  guilty_details  String   @default("Not specified")
+  acquired_date         String
+  case_date             String
+  court_order           String        @default("Pending")
+  crime_number          String        @default("Unknown")
+  guilty_details        String        @default("Not specified")
   // Relationships
-  seizedItems SeizedItems[]
-  courtCases  Court[]
+  seizedItems           SeizedItems[]
+  courtCases            Court[]
+  images                Image[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
 
-model SeizedItems { 
+model SeizedItems {
   item_id String @id @default(uuid())
   case_id String
 
-  item_category    ItemCategory
-  sub_category     String       @db.VarChar(50)
+  item_category    String
+  sub_category     String     @db.VarChar(50)
   item_description String
   seized_date      String
-  seized_location  String       @db.VarChar(255)
-  seizing_officer  String       @db.VarChar(100)
+  seized_location  String     @db.VarChar(255)
+  seizing_officer  String     @db.VarChar(100)
   current_status   ItemStatus
   release_date     String?
-  released_to      String?      @db.VarChar(100)
+  released_to      String?    @db.VarChar(100)
   remarks          String?
 
   // Jewelry Fields
@@ -132,10 +133,10 @@ model SeizedItems {
 
 model Court {
   id                       String      @id @default(uuid())
-  order_number             String      @unique
+  order_number             String
   court_type               String
   court_name               String
-  courtCaseNumber          String      @unique
+  courtCaseNumber          String
   court_policestation_info String
   court_order_info         String
   case_id                  String // Foreign key to Case
@@ -157,9 +158,15 @@ model Image {
   id      String @id @default(uuid())
   item_id String
   url     String @db.Text
-
+  type    String @default("image")
+Image_item_id_caseReg_fkey String
   // Relation to Seized_Items
   seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
+
+  // Relation to CaseReg
+  caseReg CaseReg? @relation(fields: [item_id], references: [case_id], map: "Image_item_id_caseReg_fkey")
+
+  @@index([item_id])
 }
 
 model VehicleDocument {
@@ -238,5 +245,3 @@ enum Role {
   ADMIN
   USER
 }
-
- 
