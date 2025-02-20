@@ -11,7 +11,7 @@ model User {
   id              String         @id @default(uuid())
   name            String
   email           String         @unique
-  password        String @db.VarChar(255)
+  password        String
   role            Role           @default(USER) // Role-based access (ADMIN or USER)
   policeStationId String?
   designation     String         @default("default_designation")
@@ -57,6 +57,7 @@ model CaseReg {
   court_order           String        @default("Pending")
   crime_number          String        @default("Unknown")
   guilty_details        String        @default("Not specified")
+  bhags                 Json?        @default("[]")
   // Relationships
   seizedItems           SeizedItems[]
   courtCases            Court[]
@@ -66,8 +67,8 @@ model CaseReg {
 }
 
 model SeizedItems {
-  item_id String @id @default(uuid())
-  case_id String
+  item_id          String     @id @default(uuid())
+  case_id          String
   item_category    String
   sub_category     String     @db.VarChar(50)
   item_description String
@@ -152,23 +153,22 @@ model Court {
 
 // Supporting Models
 model Image {
-  id      String @id @default(uuid())
-  item_id String
-  url     String @db.Text
-  type    String @default("image")
-Image_item_id_caseReg_fkey String
+  id                         String      @id @default(uuid())
+  item_id                    String
+  url                        String      @db.Text
+  type                       String      @default("image")
+  Image_item_id_caseReg_fkey String
   // Relation to Seized_Items
-  seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
+  seizedItem                 SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
 
   @@index([item_id])
 }
 
 model QR {
-  id      String @id @default(uuid())
+  id              String @id @default(uuid())
   seizedItem_Name String
-  case_id String
-  qr_base64 String @db.LongText
-
+  case_id         String
+  qr_base64       String @db.LongText
 }
 
 model VehicleDocument {

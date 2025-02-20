@@ -17,6 +17,7 @@ export const createCase = async (req: Request, res: Response) => {
             closure_date?: string;
             acquired_date: string;
             userId: string;
+            bhags : any;
             seize_item_info: [
                   {case_id: string;
                   item_category: ItemCategory;
@@ -38,6 +39,7 @@ try{
         case_description,
         policeStationId,
         investigating_officer,
+        bhags: req.body.bhags,
         case_status,
         filing_date,
         court_order: court_order,
@@ -72,32 +74,52 @@ export const getAllCases = async (req: Request, res: Response) => {
 }
 
 export const updateCase = async (req: Request, res: Response) => {
-    const { case_number, case_description, policeStationId, investigating_officer, case_status, filing_date, closure_date, userId } = req.body as {
+    const { case_number, case_description, bhags, year, acts, court_order, policeStationId, acquired_date, investigating_officer, case_status, filing_date, closure_date, userId } = req.body as {
+        year: number;
         case_number: string;
         case_description: string;
         policeStationId: string;
         investigating_officer: string;
-        case_status: CaseStatus; // Assuming CaseStatus is a union type
+        case_status: CaseStatus;
         filing_date: string;
-        closure_date: string;
+        acts: any;
+        court_order: string;
+        closure_date?: string;
+        acquired_date: string;
         userId: string;
+        bhags: any;
     };
-    try{
-    const response = await UC({
-        case_number,
-        case_description,
-        policeStationId,
-        investigating_officer,
-        case_status,
-        filing_date,
-        closure_date,
-        userId,
-    });
-    res.status(200).json(response);
-}catch{
-    res.status(400).json({message: "Error in updating case"});
-}
-}
+
+    if (!case_number || !case_description || !policeStationId || !investigating_officer || !case_status || !filing_date || !acquired_date || !userId) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    try {
+        const caseData: any = {
+            year,
+            case_number,
+            case_description,
+            policeStationId,
+            investigating_officer,
+            bhags,
+            case_status,
+            filing_date,
+            court_order,
+            acts,
+            acquired_date,
+            userId,
+        };
+
+        if (closure_date) caseData.closure_date = closure_date;
+
+        const response = await UC(caseData);
+        res.status(200).json({ success: true, data: response });
+    } catch (error: any) {
+        console.error("Update case error:", error);
+        res.status(400).json({ message: "Error in updating case", error: error?.message || "Unknown error" });
+    }
+};
+
 
 export const getCaseStatusCount = async (req: Request, res: Response) => {
     try {

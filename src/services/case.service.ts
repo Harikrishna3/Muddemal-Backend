@@ -11,6 +11,7 @@ export const createCaseAndSeizedItem = async (data: {
     case_status: CaseStatus;
     filing_date:string;
     acts: any;
+    bhags:any;
     court_order: string;
     closure_date?: string;
     acquired_date: string;
@@ -45,6 +46,7 @@ export const createCaseAndSeizedItem = async (data: {
             acts: data.acts,
             filing_date: data.filing_date,
             closure_date: data.closure_date,
+            bhags: data.bhags,
             court_order: data.court_order,
             acquired_date: new Date().toISOString(), // Add appropriate value
             user: {
