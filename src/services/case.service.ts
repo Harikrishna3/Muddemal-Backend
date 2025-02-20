@@ -13,6 +13,9 @@ export const createCaseAndSeizedItem = async (data: {
     filing_date:string;
     acts: any;
     bhags:any;
+    guilty_details:string;
+    region:string;
+    crime_number:string;
     court_order: string;
     closure_date?: string;
     acquired_date: string;
@@ -25,6 +28,7 @@ export const createCaseAndSeizedItem = async (data: {
           item_description: string;
           seized_date: string;
           seized_location: string;
+          
           seizing_officer: string;
           current_status: ItemStatus;
           release_date: string;
@@ -47,6 +51,9 @@ export const createCaseAndSeizedItem = async (data: {
             },
             investigating_officer: data.investigating_officer,
             case_status: data.case_status,
+            crime_number:data.crime_number,
+            guilty_details:data.guilty_details,
+            region:data.region,
             acts: data.acts,
             filing_date: data.filing_date,
             closure_date: data.closure_date,

@@ -45,7 +45,7 @@ model CaseReg {
   policeStationId       String
   policeStation         PoliceStation @relation(fields: [policeStationId], references: [id])
   investigating_officer String        @db.VarChar(100)
-  case_status           CaseStatus
+  case_status           String        @default("Open")
   filing_date           String
   closure_date          String?
   region                String        @default("default_region")
@@ -77,7 +77,7 @@ model SeizedItems {
   seized_date      String
   seized_location  String     @db.VarChar(255)
   seizing_officer  String     @db.VarChar(100)
-  current_status   ItemStatus
+  current_status   String?     @default("InCustody")
   release_date     String?
   released_to      String?    @db.VarChar(100)
   remarks          String?
@@ -144,7 +144,7 @@ model Court {
   verdict_date             String?
   verdict_summary          String?
   judge_name               String?
-  status                   CourtStatus
+  status                   String?     @default("Pending")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
