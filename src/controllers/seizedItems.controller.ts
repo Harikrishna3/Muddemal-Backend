@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { createSeizedItem as cSI} from "../services/seizedItems.service";
+import { createSeizedItem as cSI, createManySeizedItem as CMSI} from "../services/seizedItems.service";
 import { upload, uploadToDrive } from '../middlewares/googleDriveUpload';
 
 interface MulterRequest extends Request {
@@ -26,6 +26,16 @@ export const createSeizedItem = async (req: Request, res: Response) => {
 }catch{
     res.status(400).json({message: "Error in creating seized item"});
 }
+}
+
+export const updateSeizedItem = async (req: Request, res: Response) => {
+    const { seize_item_info } = req.body;
+    try {
+        const seizedItems = await CMSI(seize_item_info);
+        res.status(201).json(seizedItems);
+    } catch {
+        res.status(400).json({ message: "Error in updating seized items" });
+    }
 }
 
 

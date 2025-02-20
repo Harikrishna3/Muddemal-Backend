@@ -92,7 +92,8 @@ export const updateCase = async (req: Request, res: Response) => {
     };
 
     if (!case_number || !case_description || !policeStationId || !investigating_officer || !case_status || !filing_date || !acquired_date || !userId) {
-        return res.status(400).json({ message: "Missing required fields" });
+         res.status(400).json({ message: "Missing required fields" });
+            return;
     }
 
     try {
