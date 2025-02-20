@@ -94,11 +94,7 @@ async function logAction(
         entityId, 
         actionType,
         changedData,
-<<<<<<< HEAD
         userId: "78eb639b-8210-4b8d-9946-122e834f8501",
-=======
-        userId: "4f80dc6f-35c3-43e7-aa6a-e7bfc2180cd1",
->>>>>>> 06a456a ( f)
       },
     });
 

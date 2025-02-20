@@ -47,11 +47,26 @@ export const login = async (req: Request, res: Response) => {
     const { name, email, role, password, policeStationId } = req.body;
   
     try {
+
+      if (policeStationId) {
+        const policeStationExists = await prisma.policeStation.findUnique({
+          where: { id: policeStationId },
+        });
+  
+        if (!policeStationExists) {
+           res.status(404).json({ message: "Police Station not found" });
+           return;
+        }
+      }
+  
+
       const existingUser = await prisma.user.findUnique({ where: { email } });
       if (existingUser) {
          res.status(409).json({ message: "User already exists" });
          return;
       }
+
+
   
       const hashedPassword = await hashPassword(password);
       const user = await prisma.user.create({
@@ -60,7 +75,7 @@ export const login = async (req: Request, res: Response) => {
           email,
           role,
           password: hashedPassword,
-          policeStationId,
+          policeStationId: policeStationId || null,
         },
         include: {
           policeStation: { select: { id: true, name: true } },
