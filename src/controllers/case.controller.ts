@@ -50,6 +50,7 @@ try{
         seize_item_info: req.body.seize_item_info,
     });
 
+    
     res.status(201).json(newCase);
 }catch(error){
     res.status(400).json({message: "Error in creating case", error});

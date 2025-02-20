@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CaseStatus, ItemCategory, ItemStatus } from '@prisma/client';
 import prisma from '../config/prisma';
+import { generateQRCode } from '../utils/generateQRCode';
 
 export const createCaseAndSeizedItem = async (data: {
   year: number;
@@ -16,6 +17,7 @@ export const createCaseAndSeizedItem = async (data: {
     closure_date?: string;
     acquired_date: string;
     userId: string;
+    
     seize_item_info: [
           {case_id: string;
           item_category: ItemCategory;
@@ -31,15 +33,17 @@ export const createCaseAndSeizedItem = async (data: {
     ];
 }) => {
     try{
-    const resData = await prisma.caseReg.create({
-        data: {     
+      const result = await prisma.$transaction(async (prisma) => {
+        // Create the case
+        const resData = await prisma.caseReg.create({
+          data: {
             year: data.year,
             case_number: data.case_number,
             case_description: data.case_description,
             policeStation: {
-                connect: {
-                    id: data.policeStationId,
-                },
+              connect: {
+                id: data.policeStationId,
+              },
             },
             investigating_officer: data.investigating_officer,
             case_status: data.case_status,
@@ -48,41 +52,63 @@ export const createCaseAndSeizedItem = async (data: {
             closure_date: data.closure_date,
             bhags: data.bhags,
             court_order: data.court_order,
-            acquired_date: new Date().toISOString(), // Add appropriate value
+            acquired_date: new Date().toISOString(),
             user: {
-                connect: {
-                    id: data.userId,
-                },
+              connect: {
+                id: data.userId,
+              },
             },
-        },
-    });
-
-    // console.log(resData,"resData");
-    // console.log(data.seize_item_info,"data.seize_item_info");
-    
-
-    const allResData = await Promise.all(
-        data.seize_item_info.map(async (item) => {
-          const createdItem = await prisma.seizedItems.create({
-            data: {
-              case_id: resData.case_id,
-              item_category: item.item_category,
-              sub_category: item.sub_category,
-              item_description: item.item_description,
-              seized_date: item.seized_date,
-              seized_location: item.seized_location,
-              seizing_officer: item.seizing_officer,
-              current_status: item.current_status,
-              release_date: item.release_date,
-              released_to: item.released_to,
-              remarks: item.remarks,
-            },
-          });
-          return createdItem;
-        })
-      );
-    
-    return {resData,allResData};
+          },
+        });
+  
+        // Generate QR code for case
+        const qrCodePath = await generateQRCode(resData.case_id);
+  
+        // Update case with QR code
+        await prisma.caseReg.update({
+          where: { case_id: resData.case_id },
+          data: {
+            QRbase64: qrCodePath || '',
+          },
+        });
+  
+        // Handle seized items
+        const allResData = await Promise.all(
+          data.seize_item_info.map(async (item) => {
+            const createdItem = await prisma.seizedItems.create({
+              data: {
+                case_id: resData.case_id,
+                item_category: item.item_category,
+                sub_category: item.sub_category,
+                item_description: item.item_description,
+                seized_date: item.seized_date,
+                seized_location: item.seized_location,
+                seizing_officer: item.seizing_officer,
+                current_status: item.current_status,
+                release_date: item.release_date,
+                released_to: item.released_to,
+                remarks: item.remarks,
+              },
+            });
+  
+            const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id);
+  
+            await prisma.seizedItems.update({
+              where: { item_id: createdItem.item_id },
+              data: {
+                QRbase64: qrCodePathSeizedItem || '',
+              },
+            });
+  
+            return createdItem;
+          })
+        );
+  
+        return { resData, allResData };
+      });
+  
+      // console.log('Transaction successful:', result);
+      return result;
     }
     catch(error){
       console.log(error,"error");

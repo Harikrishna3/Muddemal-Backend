@@ -57,7 +57,9 @@ model CaseReg {
   court_order           String        @default("Pending")
   crime_number          String        @default("Unknown")
   guilty_details        String        @default("Not specified")
-  bhags                 Json?        @default("[]")
+  bhags                 Json?         @default("[]")
+  QRbase64  String?  @db.LongText        
+  // Timestamps
   // Relationships
   seizedItems           SeizedItems[]
   courtCases            Court[]
@@ -79,14 +81,14 @@ model SeizedItems {
   release_date     String?
   released_to      String?    @db.VarChar(100)
   remarks          String?
-
+  QRbase64  String?  @db.LongText    
   // Jewelry Fields
-  jewelryType    String?
-  jewelryWeight  Float?
-  purityLevel    String?
-  quantity       Int?
-  weight         Float?
-  estimatedValue Float?
+  jewelryType      String?
+  jewelryWeight    Float?
+  purityLevel      String?
+  quantity         Int?
+  weight           Float?
+  estimatedValue   Float?
 
   // Electronics & Vehicles
   brandModel   String?
