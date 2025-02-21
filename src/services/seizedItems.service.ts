@@ -83,3 +83,31 @@ export const createManySeizedItem = async (data: Array<{
     throw new Error("Error in creating seized item");
 }
 }
+
+export const getAllSeizedItems = async (userId: string) => {
+    try {
+        const caseIds = await prisma.caseReg.findMany({
+            where: { userId },
+            select: { case_id: true },
+        });
+
+        if (caseIds.length === 0) {
+            throw new Error("Case not found for the given user.");
+        }
+
+        const caseIdList = caseIds.map((caseObj) => caseObj.case_id);
+
+        const seizedItems = await prisma.seizedItems.findMany({
+            where: {
+                case_id: {
+                    in: caseIdList,
+                },
+            },
+        });
+
+        return seizedItems;
+    } catch (error) {
+        console.error("Error fetching seized items:", error);
+        throw new Error("Error in fetching seized items");
+    }
+};
