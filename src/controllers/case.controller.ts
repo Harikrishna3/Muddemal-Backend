@@ -1,4 +1,3 @@
-import { CaseStatus, ItemCategory, ItemStatus } from "@prisma/client";
 import {
   createCaseAndSeizedItem as CC,
   getCase as GC,
@@ -32,7 +31,7 @@ export const createCase = async (req: Request, res: Response) => {
     case_description: string;
     policeStationId: string;
     investigating_officer: string;
-    case_status: CaseStatus;
+    case_status: string;
     filing_date: string;
     acts: any;
     court_order: string;
@@ -43,13 +42,13 @@ export const createCase = async (req: Request, res: Response) => {
     seize_item_info: [
       {
         case_id: string;
-        item_category: ItemCategory;
+        item_category: string;
         sub_category: string;
         item_description: string;
         seized_date: string;
         seized_location: string;
         seizing_officer: string;
-        current_status: ItemStatus;
+        current_status: string;
         release_date: string;
         released_to: string;
         remarks: string;
@@ -124,7 +123,7 @@ export const updateCase = async (req: Request, res: Response) => {
     case_description: string;
     policeStationId: string;
     investigating_officer: string;
-    case_status: CaseStatus;
+    case_status: string;
     filing_date: string;
     acts: any;
     court_order: string;

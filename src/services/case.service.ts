@@ -1,5 +1,3 @@
-import { Request, Response } from 'express';
-import { CaseStatus, ItemCategory, ItemStatus } from '@prisma/client';
 import prisma from '../config/prisma';
 import { generateQRCode } from '../utils/generateQRCode';
 
@@ -9,7 +7,7 @@ export const createCaseAndSeizedItem = async (data: {
     case_description: string;
     policeStationId: string;
     investigating_officer: string;
-    case_status: CaseStatus;
+    case_status: string;
     filing_date:string;
     acts: any;
     bhags:any;
@@ -23,14 +21,14 @@ export const createCaseAndSeizedItem = async (data: {
     
     seize_item_info: [
           {case_id: string;
-          item_category: ItemCategory;
+          item_category: string;
           sub_category: string;
           item_description: string;
           seized_date: string;
           seized_location: string;
           
           seizing_officer: string;
-          current_status: ItemStatus;
+          current_status: string;
           release_date: string;
           released_to: string;
           remarks: string;}
@@ -156,7 +154,7 @@ export const updateCase = async (data: {
     case_description: string;
     policeStationId: string;
     investigating_officer: string;
-    case_status: CaseStatus;
+    case_status: string;
     filing_date: string;
     closure_date?: string;
     userId: string;
