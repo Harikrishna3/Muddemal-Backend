@@ -4,7 +4,7 @@ import { createCase, getAllCases, getCase, getCaseStatusCount, updateCase } from
 const router = express.Router();
 
 router.post('/createCase', createCase);
-router.get('/updateCase',updateCase);
+router.post('/updateCase',updateCase);
 router.get('/getCaseStatusCount',getCaseStatusCount)
 router.get('/getACase/:id',getCase)
 router.get('/getCases',getAllCases)

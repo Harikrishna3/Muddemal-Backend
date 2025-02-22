@@ -50,9 +50,7 @@ export const addSeizedItems = async (req: Request, res: Response) => {
 }
 
 export const updateSeizedItem = async (req: Request, res: Response) => {
-    const { item_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks } = req.body;
-    console.log(req.body);
-    
+    const { item_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks } = req.body; 
     try {
         const seizedItem = await USI({
             item_id,

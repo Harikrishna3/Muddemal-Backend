@@ -100,11 +100,10 @@ export const getAllCases = async (req: Request, res: Response) => {
 
 export const updateCase = async (req: Request, res: Response) => {
   const {
+    case_id,
     case_number,
     case_description,
-    bhags,
     year,
-    acts,
     court_order,
     policeStationId,
     acquired_date,
@@ -115,6 +114,7 @@ export const updateCase = async (req: Request, res: Response) => {
     closure_date,
     userId,
   } = req.body as {
+    case_id: string;
     year: number;
     case_number: string;
     crime_number: string;
@@ -131,24 +131,51 @@ export const updateCase = async (req: Request, res: Response) => {
     acquired_date: string;
     userId: string;
     bhags: any;
+    seize_item_info: [
+      {
+        item_id: string;
+        item_category: string;
+        sub_category: string;
+        item_description: string;
+        seized_date: string;
+        seized_location: string;
+        seizing_officer: string;
+        current_status: string;
+        release_date: string;
+        released_to: string;
+        remarks: string;
+      }
+    ];
   };
 
   if (
+    case_id === undefined ||
     !case_number ||
     !case_description ||
     !policeStationId ||
     !investigating_officer ||
     !case_status ||
     !filing_date ||
-    !acquired_date ||
     !userId
   ) {
+    const missingFields = [];
+    if (!case_id) missingFields.push("case_id");
+    if (!case_number) missingFields.push("case_number");
+    if (!case_description) missingFields.push("case_description");
+    if (!policeStationId) missingFields.push("policeStationId");
+    if (!investigating_officer) missingFields.push("investigating_officer");
+    if (!case_status) missingFields.push("case_status");
+    if (!filing_date) missingFields.push("filing_date");
+    if (!userId) missingFields.push("userId");
+
+    console.log("Missing required fields:", missingFields);
     res.status(400).json({ message: "Missing required fields" });
     return;
   }
 
   try {
     const caseData: any = {
+        case_id,
         year,
         case_number,
         case_description,
