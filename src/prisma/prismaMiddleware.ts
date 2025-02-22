@@ -7,6 +7,7 @@ const applyMiddleware = (prisma: PrismaClient) => {
     // console.log(`Model: ${model}, Action: ${action}`);
     
     const trackedModels = ['CaseReg', 'SeizedItems', 'Court'];
+    const selectedModelsID = model === 'CaseReg'? "case_id" : model === 'SeizedItems'?  "item_id" : "id";
 
     if (!trackedModels.includes(model!)) return next(params);
 
@@ -22,7 +23,7 @@ const applyMiddleware = (prisma: PrismaClient) => {
       const result = await next(params);
       // console.log("result", result);
       
-      entityId = result?.item_id ?? null;
+      entityId = result?.selectedModelsID ?? null;
       // console.log("entityId", entityId);
       
       if (entityId !== null) {
@@ -33,8 +34,10 @@ const applyMiddleware = (prisma: PrismaClient) => {
 
     if (action === 'update') {
       actionType = ActionType.Updated;
-      entityId = args.where?.id ?? null;
-      const existingData = await (prisma as any)[model!.charAt(0).toLowerCase() + model!.slice(1)]?.findUnique({ where: args.where });
+      entityId = args.where?.[selectedModelsID] ?? null;
+      console.log("entityId", entityId, "args", args);
+      
+      const existingData = await (prisma as any)[model!.charAt(0).toLowerCase() + model!.slice(1)]?.findUnique({ where: entityId });
 
       changedData = { before: existingData, after: args.data };
       const result = await next(params);
@@ -46,7 +49,8 @@ const applyMiddleware = (prisma: PrismaClient) => {
 
     if (action === 'delete') {
       actionType = ActionType.Deleted;
-      entityId = args.where.id;
+      entityId = args.where?.[selectedModelsID] ?? null;
+
       const existingData = await (prisma as any)[model!.charAt(0).toLowerCase() + model!.slice(1)]?.findUnique({ where: args.where });
 
       changedData = { deleted: existingData };
