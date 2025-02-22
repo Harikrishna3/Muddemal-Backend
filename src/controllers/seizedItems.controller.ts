@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI} from "../services/seizedItems.service";
+import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI , updateSeizedItem as USI} from "../services/seizedItems.service";
 import { upload, uploadToDrive } from '../middlewares/googleDriveUpload';
 
 interface MulterRequest extends Request {
@@ -29,7 +29,7 @@ export const createSeizedItem = async (req: Request, res: Response) => {
 }
 
 export const getAllSeizedItems = async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+    const userId = req.params.userId;  
     try {
         const seizedItems = await GASI(userId);
         res.status(200).json(seizedItems);
@@ -39,13 +39,35 @@ export const getAllSeizedItems = async (req: Request, res: Response) => {
 }
 
 
-export const updateSeizedItem = async (req: Request, res: Response) => {
+export const addSeizedItems = async (req: Request, res: Response) => {
     const { seize_item_info } = req.body;
     try {
         const seizedItems = await CMSI(seize_item_info);
         res.status(201).json(seizedItems);
     } catch {
         res.status(400).json({ message: "Error in updating seized items" });
+    }
+}
+
+export const updateSeizedItem = async (req: Request, res: Response) => {
+    const { item_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks } = req.body;
+    try {
+        const seizedItem = await USI({
+            item_id,
+            item_category,  
+            sub_category,
+            item_description,
+            seized_date,
+            seized_location,
+            seizing_officer,
+            current_status,
+            release_date,
+            released_to,
+            remarks,
+        });
+        res.status(200).json(seizedItem);
+    } catch {
+        res.status(400).json({ message: "Error in updating seized item" });
     }
 }
 
