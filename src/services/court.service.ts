@@ -34,6 +34,8 @@ export const addCourtDeatils = async (data: {
         });
         return court;
     }catch(err){
+        console.log(err);
+        
         throw err;
     }
 }

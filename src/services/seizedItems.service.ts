@@ -112,6 +112,25 @@ export const getAllSeizedItems = async (userId: string) => {
     }
 };
 
+export const getASeizedItemsFromCase = async(caseID: string) => {
+    try {
+        const res = await prisma.seizedItems.findMany({
+            where: {
+                case_id: caseID,
+            },
+        });
+
+        if (res.length === 0) {
+            throw new Error("No seized items found for the given case ID.");
+        }
+
+        return res;
+    } catch (error) {
+        console.error("Error fetching seized items for case:", error);
+        throw new Error("Error in fetching seized items for case");
+    }
+}
+
  
 export const updateSeizedItem = async (data: {
     item_id: string;
