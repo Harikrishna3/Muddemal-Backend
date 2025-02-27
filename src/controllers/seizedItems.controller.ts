@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI ,getASeizedItemsFromCase as GASIFC, updateSeizedItem as USI} from "../services/seizedItems.service";
+import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI ,getASeizedItemsFromCase as GASIFC, updateSeizedItem as USI, getSeizedItem as GSI} from "../services/seizedItems.service";
 import { upload, uploadToDrive } from '../middlewares/googleDriveUpload';
 
 interface MulterRequest extends Request {
@@ -45,6 +45,16 @@ export const getASeizedItemsFromCase = async (req: Request, res: Response) => {
     }
     catch {
         res.status(400).json({ message: "Error in fetching seized items" });
+    }
+}
+
+export const getSeizedItem = async (req: Request, res: Response) => {
+    const { item_id } = req.params;
+    try {
+        const seizedItem = await GSI(item_id);
+        res.status(200).json(seizedItem);
+    } catch {
+        res.status(400).json({ message: "Error in fetching seized item" });
     }
 }
 

@@ -67,7 +67,7 @@ export const createCaseAndSeizedItem = async (data: {
         });
   
         // Generate QR code for case
-        const qrCodePath = await generateQRCode(resData.case_id);
+        const qrCodePath = await generateQRCode(resData.case_id, 'case');
   
         // Update case with QR code
         await prisma.caseReg.update({
@@ -96,7 +96,7 @@ export const createCaseAndSeizedItem = async (data: {
               },
             });
   
-            const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id);
+            const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id, 'seizedItem');
   
             await prisma.seizedItems.update({
               where: { item_id: createdItem.item_id },
@@ -230,7 +230,7 @@ export const updateCase = async (data: {
       });
 
       // Generate QR code for new case
-      const qrCodePath = await generateQRCode(newCase.case_id);
+      const qrCodePath = await generateQRCode(newCase.case_id, 'case');
 
       // Update new case with QR code
       await prisma.caseReg.update({
@@ -259,7 +259,7 @@ export const updateCase = async (data: {
             },
           });
 
-          const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id);
+          const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id, 'seizedItem');
 
           await prisma.seizedItems.update({
             where: { item_id: createdItem.item_id },
