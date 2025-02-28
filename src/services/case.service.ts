@@ -284,36 +284,53 @@ export const updateCase = async (data: {
 
 export const getCaseStatusCount = async (userId: string) => {
   try {
+    const cases = await prisma.caseReg.findMany({
+      where: { userId },
+      select: { case_id: true, case_status: true }
+    });
 
-     const cases = await prisma.caseReg.findMany({
-        where: { userId },
-        select: { case_id: true, case_status: true }
-     });
+    let openCases = 0;
+    let closedCases = 0;
+    let pendingCases = 0;
+    let aFinalCases = 0;
+    let cFinalCases = 0;
+    let trialPendingCases = 0;
+    let psPendingCases = 0;
+    let darmentCases = 0;
+    let courtPoliceDisposalCases = 0;
+    const caseIds: string[] = [];
 
-     let openCases = 0;
-     let closedCases = 0;
-     let pendingCases = 0;
-     const caseIds: string[] = [];
+    cases.forEach(({ case_id, case_status }) => {
+      caseIds.push(case_id);
+      if (case_status === 'Open') openCases++;
+      else if (case_status === 'Closed') closedCases++;
+      else if (case_status === 'Investigation') pendingCases++;
+      else if (case_status === 'A final') aFinalCases++;
+      else if (case_status === 'C final') cFinalCases++;
+      else if (case_status === 'Trial/Pending') trialPendingCases++;
+      else if (case_status === 'PS Pending') psPendingCases++;
+      else if (case_status === 'Darment Case') darmentCases++;
+      else if (case_status === 'Court/Police Station Disposal') courtPoliceDisposalCases++;
+    });
 
-     cases.forEach(({ case_id, case_status }) => {
-        caseIds.push(case_id);
-        if (case_status === 'Open') openCases++;
-        else if (case_status === 'Closed') closedCases++;
-        else if (case_status === 'Investigation') pendingCases++;
-     });
+    const seizedItemCount = await prisma.seizedItems.count({
+      where: { case_id: { in: caseIds } }
+    });
 
-     const seizedItemCount = await prisma.seizedItems.count({
-        where: { case_id: { in: caseIds } }
-     });
-
-     return {
-        Open_Cases: openCases,
-        Closed_Cases: closedCases,
-        Pending_Cases: pendingCases,
-        Total_Cases: cases.length,
-        Seized_Items: seizedItemCount
-     };
+    return {
+      Open_Cases: openCases,
+      Closed_Cases: closedCases,
+      Pending_Cases: pendingCases,
+      A_Final_Cases: aFinalCases,
+      C_Final_Cases: cFinalCases,
+      Trial_Pending_Cases: trialPendingCases,
+      PS_Pending_Cases: psPendingCases,
+      Darment_Cases: darmentCases,
+      Court_Police_Station_Disposal: courtPoliceDisposalCases,
+      Total_Cases: cases.length,
+      Seized_Items: seizedItemCount
+    };
   } catch (error) {
-     return {message: "Error in getting case status count"};
+    return { message: "Error in getting case status count" };
   }
 };
