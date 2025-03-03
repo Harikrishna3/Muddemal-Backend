@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI ,getASeizedItemsFromCase as GASIFC, updateSeizedItem as USI, getSeizedItem as GSI} from "../services/seizedItems.service";
 import { upload, uploadToDrive } from '../middlewares/googleDriveUpload';
 
+
 interface MulterRequest extends Request {
     files: Express.Multer.File[];
   }
@@ -90,19 +91,3 @@ export const updateSeizedItem = async (req: Request, res: Response) => {
         res.status(400).json({ message: "Error in updating seized item" });
     }
 }
-
-
-export const uploadItemImage = async (req: Request, res: Response): Promise<void>  => {
-    try {
-        const file = req.file;
-        if (!file) {
-            res.status(400).send('No file uploaded.');
-            return;
-        }
-
-        const uploadedFile = await uploadToDrive(file.path, file.filename);
-        res.status(200).json({ fileId: uploadedFile.id, link: uploadedFile.webViewLink });
-    } catch (error) {
-        res.status(500).json({ message: 'Upload failed', error });
-    }
-};
