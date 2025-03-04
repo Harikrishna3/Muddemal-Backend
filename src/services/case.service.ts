@@ -361,3 +361,31 @@ export const getCaseStatusCount = async (userId: string) => {
     return { message: "Error in getting case status count" };
   }
 };
+
+export const showQRCode = async (id: string) => {
+  try {
+    const caseData = await prisma.caseReg.findUnique({
+      where: { case_id: id },
+      include: {
+        seizedItems: true,
+      },
+    });
+
+    return caseData;
+  } catch {
+    return { message: "QR Code not found" };
+  }
+}
+
+// export const getQRSeizedItemData = async (id: string) => {
+//   try {
+//     const seizedItemData = await prisma.seizedItems.findUnique({
+//       where: { item_id: id }
+//     });
+
+//     return seizedItemData;
+//   } catch {
+//     return { message: "Seized item data not    found" };
+//   }
+// }
+

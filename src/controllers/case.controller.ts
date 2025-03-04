@@ -4,6 +4,8 @@ import {
   updateCase as UC,
   getAllCases as GAC,
   getCaseStatusCount as GCSC,
+  showQRCode,
+  
 } from "../services/case.service";
 import { Request, Response } from "express";
 import prisma from "../config/prisma";
@@ -223,5 +225,20 @@ export const getCaseStatusCount = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching case status count:", error);
     res.status(400).json({ message: "Error in getting case status count" });
+  }
+};
+export const showQRCodeData = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const caseData = await showQRCode(id);
+    if (caseData) {
+      res.render('qrTemplate', {caseData:caseData});
+    } else {
+      res.status(404).json({ message: "Case data not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching QR code data:", error);
+    res.status(400).json({ message: "Error in fetching QR code data" });
   }
 };

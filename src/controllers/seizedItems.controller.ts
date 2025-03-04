@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI ,getASeizedItemsFromCase as GASIFC, updateSeizedItem as USI, getSeizedItem as GSI} from "../services/seizedItems.service";
+import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI ,getASeizedItemsFromCase as GASIFC, updateSeizedItem as USI, getSeizedItem as GSI, showQRCodeForSeizedItem} from "../services/seizedItems.service";
 import { upload, uploadToDrive } from '../middlewares/googleDriveUpload';
 
 
@@ -65,6 +65,20 @@ export const getSeizedItem = async (req: Request, res: Response) => {
     }
 }
 
+export const showQRCodeForSeizedItemData = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const item = await showQRCodeForSeizedItem(id);
+        console.log(item,"hello");
+        if (item) {
+            res.render('itemTemplate', { item: item });
+        } else {
+            res.status(404).json({ message: "Seized item not found" });
+        }
+    } catch {
+        res.status(400).json({ message: "Error in fetching seized item" });
+    }
+}
 
 export const addSeizedItems = async (req: Request, res: Response) => {
     const { seize_item_info } = req.body;

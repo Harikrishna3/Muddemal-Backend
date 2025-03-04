@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+    <link rel="stylesheet" href="/styles/itemStyle.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .item-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #003366;
+        }
+        .item-details {
+            margin-top: 20px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #003366;
+        }
+        .qr-code {
+            text-align: center;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100px;
+            height: auto;
+        }
+        @media (max-width: 600px) {
+            .item-container {
+                padding: 15px;
+                max-width: 90%;
+            }
+            .detail-row {
+                flex-direction: column;
+                align-items: start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="item-container">
+        <h1>Maharashtra Police - Item Details</h1>
+        <div class="item-details">
+            <% if (item) { %>
+                <div class="detail-row">
+                    <span class="detail-label">Item ID:</span>
+                    <span class="detail-value"><%= item.item_id || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Case ID:</span>
+                    <span class="detail-value"><%= item.case_id || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Item Category:</span>
+                    <span class="detail-value"><%= item.item_category || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Sub Category:</span>
+                    <span class="detail-value"><%= item.sub_category || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Description:</span>
+                    <span class="detail-value"><%= item.item_description || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Seized Date:</span>
+                    <span class="detail-value"><%= item.seized_date || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Seized Location:</span>
+                    <span class="detail-value"><%= item.seized_location || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Seizing Officer:</span>
+                    <span class="detail-value"><%= item.seizing_officer || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Current Status:</span>
+                    <span class="detail-value"><%= item.current_status || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Release Date:</span>
+                    <span class="detail-value"><%= item.release_date || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Released To:</span>
+                    <span class="detail-value"><%= item.released_to || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Remarks:</span>
+                    <span class="detail-value"><%= item.remarks || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Created At:</span>
+                    <span class="detail-value"><%= item.createdAt || 'N/A' %></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Updated At:</span>
+                    <span class="detail-value"><%= item.updatedAt || 'N/A' %></span>
+                </div>
+            <% } else { %>
+                <div class="detail-row">
+                    <span class="detail-label">Error:</span>
+                    <span class="detail-value">Item data not available.</span>
+                </div>
+            <% } %>
+        </div>
+        <div class="qr-code">
+            <h2>QR Code</h2>
+            <% if (item && item.QRbase64) { %>
+                <img src="<%= item.QRbase64 %>" alt="QR Code">
+            <% } else { %>
+                <p>QR Code not available.</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

@@ -171,6 +171,19 @@ export const getSeizedItem = async (item_id: string) => {
     }
 }
 
+export const showQRCodeForSeizedItem = async (item_id: string) => {
+    try {
+        const resData = await prisma.seizedItems.findUnique({
+            where: { item_id },
+        });
+
+        return resData;
+    } catch (error) {
+        console.error("Error fetching seized item:", error);
+        throw new Error("Error in fetching seized item");
+    }
+}
+
  
 export const updateSeizedItem = async (data: {
     item_id: string;
