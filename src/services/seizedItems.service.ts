@@ -19,6 +19,7 @@ export const createSeizedItem = async (data: {
     weight?: string;
     NoOfItems?: string;
     itemStateDescription?: string;
+    price?: string;
 
 }) => {
     try{
@@ -35,6 +36,13 @@ export const createSeizedItem = async (data: {
             release_date: data.release_date,
             released_to: data.released_to,
             remarks: data.remarks,
+            Bhag: data.Bhag,
+            depositDate: data.depositDate,
+            fromWhomReceived: data.fromWhomReceived,
+            weight: data.weight,
+            NoOfItems: data.NoOfItems,
+            itemStateDescription: data.itemStateDescription,
+            price: data.price,
         },
     });
 
@@ -61,7 +69,7 @@ export const createManySeizedItem = async (data: Array<{
     weight?: string;
     NoOfItems?: string;
     itemStateDescription?: string;
-
+    price?: string;
 }>) => {
     try{
     const resData = await prisma.seizedItems.createMany({
@@ -83,7 +91,7 @@ export const createManySeizedItem = async (data: Array<{
             weight?: string;
             NoOfItems?: string;
             itemStateDescription?: string;
-    
+            price?: string;
         }) => ({
             case_id: item.case_id,
             item_category: item.item_category,
@@ -101,7 +109,8 @@ export const createManySeizedItem = async (data: Array<{
             fromWhomReceived: item.fromWhomReceived,
             weight: item.weight,
             NoOfItems: item.NoOfItems,
-            itemStateDescription: item.itemStateDescription
+            itemStateDescription: item.itemStateDescription,
+            price: item.price,
         })),
     });
 
@@ -203,6 +212,7 @@ export const updateSeizedItem = async (data: {
     weight?: string;
     NoOfItems?: string;
     itemStateDescription?: string;
+    price?: string;
 }) => {
     try {
         const resData = await prisma.seizedItems.update({
@@ -224,6 +234,7 @@ export const updateSeizedItem = async (data: {
                 weight: data.weight,
                 NoOfItems: data.NoOfItems,
                 itemStateDescription: data.itemStateDescription,
+                price: data.price,
             },
         });
 

@@ -86,6 +86,7 @@ model SeizedItems {
   fromWhomReceived        String?    @default("Not Specified")
   weight           String?     @default("Not Specified")
   NoOfItems        String?    @default("Not Specified")
+  price            String?    @default("Not Specified")
   itemStateDescription String? @default("Not Specified")
   QRbase64  String?  @db.LongText    
 

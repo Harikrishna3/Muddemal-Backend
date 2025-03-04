@@ -38,7 +38,7 @@ export const createCaseAndSeizedItem = async (data: {
           weight?: string;
           NoOfItems?: string;
           itemStateDescription?: string;
-  
+          price?: string; 
         }
     ];
 }) => {
@@ -107,6 +107,7 @@ export const createCaseAndSeizedItem = async (data: {
                 weight: item.weight,
                 NoOfItems: item.NoOfItems,
                 itemStateDescription: item.itemStateDescription,
+                price: item.price
               },
             });
   
@@ -200,7 +201,7 @@ export const updateCase = async (data: {
       weight?: string;
       NoOfItems?: string;
       itemStateDescription?: string;
-
+      price?: string;
     }
   ];
 }) => {
@@ -283,6 +284,7 @@ export const updateCase = async (data: {
               weight: item.weight,
               NoOfItems: item.NoOfItems,
               itemStateDescription: item.itemStateDescription,
+              price: item.price
             },
           });
 
