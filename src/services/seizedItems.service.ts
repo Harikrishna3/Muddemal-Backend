@@ -13,6 +13,13 @@ export const createSeizedItem = async (data: {
     release_date: string;
     released_to: string;
     remarks: string;
+    Bhag?: string;
+    depositDate?: string;
+    fromWhomReceived?: string;
+    weight?: string;
+    NoOfItems?: string;
+    itemStateDescription?: string;
+
 }) => {
     try{
     const resData = await prisma.seizedItems.create({
@@ -48,6 +55,13 @@ export const createManySeizedItem = async (data: Array<{
     release_date: string,
     released_to: string,
     remarks: string
+    Bhag?: string;
+    depositDate?: string;
+    fromWhomReceived?: string;
+    weight?: string;
+    NoOfItems?: string;
+    itemStateDescription?: string;
+
 }>) => {
     try{
     const resData = await prisma.seizedItems.createMany({
@@ -63,6 +77,13 @@ export const createManySeizedItem = async (data: Array<{
             release_date: string,
             released_to: string,
             remarks: string
+            Bhag?: string;
+            depositDate?: string;
+            fromWhomReceived?: string;
+            weight?: string;
+            NoOfItems?: string;
+            itemStateDescription?: string;
+    
         }) => ({
             case_id: item.case_id,
             item_category: item.item_category,
@@ -75,6 +96,12 @@ export const createManySeizedItem = async (data: Array<{
             release_date: item.release_date,
             released_to: item.released_to,
             remarks: item.remarks,
+            Bhag: item.Bhag,
+            depositDate: item.depositDate,
+            fromWhomReceived: item.fromWhomReceived,
+            weight: item.weight,
+            NoOfItems: item.NoOfItems,
+            itemStateDescription: item.itemStateDescription
         })),
     });
 
@@ -157,6 +184,12 @@ export const updateSeizedItem = async (data: {
     release_date: string;
     released_to: string;
     remarks: string;
+    Bhag?: string;
+    depositDate?: string;
+    fromWhomReceived?: string;
+    weight?: string;
+    NoOfItems?: string;
+    itemStateDescription?: string;
 }) => {
     try {
         const resData = await prisma.seizedItems.update({
@@ -172,6 +205,12 @@ export const updateSeizedItem = async (data: {
                 release_date: data.release_date,
                 released_to: data.released_to,
                 remarks: data.remarks,
+                Bhag: data.Bhag,
+                depositDate: data.depositDate,
+                fromWhomReceived: data.fromWhomReceived,
+                weight: data.weight,
+                NoOfItems: data.NoOfItems,
+                itemStateDescription: data.itemStateDescription,
             },
         });
 

@@ -31,7 +31,15 @@ export const createCaseAndSeizedItem = async (data: {
           current_status: string;
           release_date: string;
           released_to: string;
-          remarks: string;}
+          remarks: string;
+          Bhag?: string;
+          depositDate?: string;
+          fromWhomReceived?: string;
+          weight?: string;
+          NoOfItems?: string;
+          itemStateDescription?: string;
+  
+        }
     ];
 }) => {
     try{
@@ -93,6 +101,12 @@ export const createCaseAndSeizedItem = async (data: {
                 release_date: item.release_date,
                 released_to: item.released_to,
                 remarks: item.remarks,
+                Bhag: item.Bhag,
+                depositDate: item.depositDate,
+                fromWhomReceived: item.fromWhomReceived,
+                weight: item.weight,
+                NoOfItems: item.NoOfItems,
+                itemStateDescription: item.itemStateDescription,
               },
             });
   
@@ -180,6 +194,13 @@ export const updateCase = async (data: {
       release_date: string;
       released_to: string;
       remarks: string;
+      Bhag?: string;
+      depositDate?: string;
+      fromWhomReceived?: string;
+      weight?: string;
+      NoOfItems?: string;
+      itemStateDescription?: string;
+
     }
   ];
 }) => {
@@ -256,6 +277,12 @@ export const updateCase = async (data: {
               release_date: item.release_date,
               released_to: item.released_to,
               remarks: item.remarks,
+              Bhag: item.Bhag,
+              depositDate: item.depositDate,
+              fromWhomReceived: item.fromWhomReceived,
+              weight: item.weight,
+              NoOfItems: item.NoOfItems,
+              itemStateDescription: item.itemStateDescription,
             },
           });
 

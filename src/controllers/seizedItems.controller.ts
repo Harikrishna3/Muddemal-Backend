@@ -8,7 +8,7 @@ interface MulterRequest extends Request {
   }
 
 export const createSeizedItem = async (req: Request, res: Response) => {
-    const { case_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks } = req.body;
+    const { case_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks, Bhag, depositDate, fromWhomReceived, weight, NoOfItems, itemStateDescription } = req.body;
     try{
     const seizedMobile = await cSI({
         case_id,
@@ -22,6 +22,12 @@ export const createSeizedItem = async (req: Request, res: Response) => {
         release_date,
         released_to,
         remarks,
+        Bhag,
+        depositDate,
+        fromWhomReceived,
+        weight,
+        NoOfItems,
+        itemStateDescription
     });
     res.status(201).json(seizedMobile);
 }catch{
@@ -71,7 +77,7 @@ export const addSeizedItems = async (req: Request, res: Response) => {
 }
 
 export const updateSeizedItem = async (req: Request, res: Response) => {
-    const { item_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks } = req.body; 
+    const { item_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks, Bhag, depositDate, fromWhomReceived, weight, NoOfItems, itemStateDescription } = req.body; 
     try {
         const seizedItem = await USI({
             item_id,
@@ -85,6 +91,12 @@ export const updateSeizedItem = async (req: Request, res: Response) => {
             release_date,
             released_to,
             remarks,
+            Bhag,
+            depositDate,
+            fromWhomReceived,
+            weight,
+            NoOfItems,
+            itemStateDescription
         });
         res.status(200).json(seizedItem);
     } catch {

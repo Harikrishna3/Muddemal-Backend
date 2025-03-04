@@ -72,51 +72,23 @@ model SeizedItems {
   item_id          String     @id @default(uuid())
   case_id          String
   item_category    String
-  sub_category     String     @db.VarChar(50)
-  item_description String
+  sub_category     String?     @db.VarChar(50)
+  item_description String?
   seized_date      String
   seized_location  String     @db.VarChar(255)
   seizing_officer  String     @db.VarChar(100)
   current_status   String?     @default("InCustody")
   release_date     String?
   released_to      String?    @db.VarChar(100)
-  remarks          String?
+  remarks          String?    
+  Bhag             String?    @default("Not Specified")
+  depositDate     String?     @default("Not Specified")
+  fromWhomReceived        String?    @default("Not Specified")
+  weight           String?     @default("Not Specified")
+  NoOfItems        String?    @default("Not Specified")
+  itemStateDescription String? @default("Not Specified")
   QRbase64  String?  @db.LongText    
-  // Jewelry Fields
-  jewelryType      String?
-  jewelryWeight    Float?
-  purityLevel      String?
-  quantity         Int?
-  weight           Float?
-  estimatedValue   Float?
 
-  // Electronics & Vehicles
-  brandModel   String?
-  serialNumber String?
-  imeiNumber   String?
-
-  vehicleType        String?
-  registrationNumber String?
-  chassisNumber      String?
-  engineNumber       String?
-  vehicleOwner       String?
-
-  // Documents
-  documentType     String?
-  documentNumber   String?
-  issuingAuthority String?
-  forgeryDetected  Boolean?
-
-  // Currency
-  currencyType String?
-  totalAmount  Float?
-  counterfeit  Boolean?
-
-  // Drugs & Weapons
-  drugType     String?
-  drugQuantity Float?
-  weaponType   String?
-  weaponModel  String?
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -124,8 +96,6 @@ model SeizedItems {
 
   // Relationships
   images           Image[]
-  vehicleDocuments VehicleDocument[]
-  serialNumbers    SerialNumber[]
 
   // Foreign key linking to Case
   case CaseReg @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
@@ -155,13 +125,12 @@ model Court {
 
 // Supporting Models
 model Image {
-  id                         String      @id @default(uuid())
-  item_id                    String
-  url                        String      @db.Text
-  type                       String      @default("image")
-  Image_item_id_caseReg_fkey String
+  id          String      @id @default(uuid())
+  item_id     String
+  url         String      @db.Text
+  type        String      @default("image")
   // Relation to Seized_Items
-  seizedItem                 SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
+  seizedItem  SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
 
   @@index([item_id])
 }
@@ -173,23 +142,7 @@ model QR {
   qr_base64       String @db.LongText
 }
 
-model VehicleDocument {
-  id      String @id @default(uuid())
-  item_id String
-  doc_url String @db.Text
 
-  // Relation to Seized_Items
-  seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
-}
-
-model SerialNumber {
-  id      String @id @default(uuid())
-  item_id String
-  serial  String
-
-  // Relation to Seized_Items
-  seizedItem SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
-}
 
 model Logs {
   id          String     @id @default(uuid())

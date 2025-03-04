@@ -144,6 +144,12 @@ export const updateCase = async (req: Request, res: Response) => {
         release_date: string;
         released_to: string;
         remarks: string;
+        Bhag?: string;
+        depositDate?: string;
+        fromWhomReceived?: string;
+        weight?: string;
+        NoOfItems?: string;
+        itemStateDescription?: string;
       }
     ];
   };
