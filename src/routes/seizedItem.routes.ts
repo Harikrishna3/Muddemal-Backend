@@ -18,7 +18,7 @@ const router = express.Router();
 router.post('/createSeizedItem', createSeizedItem);
 router.post('/addSeizedItems', addSeizedItems);
 router.post('/updateSeizedItem', updateSeizedItem);
-router.post("/uploadImage", upload, uploadItemImage);
+// router.post("/uploadImage", upload, uploadItemImage);
 
 router.get('/getAllSeizedItems/:userId', getAllSeizedItems);
 router.get('/getASeizedItemsFromCase/:case_id', getASeizedItemsFromCase);

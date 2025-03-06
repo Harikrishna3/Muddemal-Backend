@@ -1,3 +1,4 @@
+
 import prisma from '../config/prisma';
 import { generateQRCode } from '../utils/generateQRCode';
 import { uploadItemImage } from '../utils/uploadItemImage';
@@ -26,8 +27,7 @@ export const createCaseAndSeizedItem = async (data: {
           sub_category: string;
           item_description: string;
           seized_date: string;
-          seized_location: string;
-          
+          seized_location: string;     
           seizing_officer: string;
           current_status: string;
           release_date: string;
@@ -39,6 +39,7 @@ export const createCaseAndSeizedItem = async (data: {
           weight?: string;
           NoOfItems?: string;
           itemStateDescription?: string;
+          images: any;
           price?: string; 
         }
     ];
@@ -87,23 +88,21 @@ export const createCaseAndSeizedItem = async (data: {
         });
 
         const imgsLinkArray = await Promise.all(
-          data.images.map(async (img: any) => {
-            const createdImg = await uploadItemImage(img, null as any);
+          
+          data.images?.map(async (img: any) => {
+            
+            const createdImg = await uploadItemImage(img);
+            
             return createdImg;
           })
         );
-
-        // Using Prisma's executeRaw as a workaround if the schema can't be modified immediately
-        // await prisma.$executeRaw`UPDATE "CaseReg" SET "images" = ${JSON.stringify(imgsLinkArray)} WHERE "case_id" = ${resData.case_id}`;
         
-        // Alternatively, if you update your schema, you can keep using the original code:
-        // await prisma.caseReg.update({
-        //   where: { case_id: resData.case_id },
-        //   data: {
-        //     images: imgsLinkArray,
-        //   },  
-        // });
-  
+        await prisma.caseReg.update({
+          where: { case_id: resData.case_id },
+          data: { images: imgsLinkArray }
+        });
+
+
         // Handle seized items
         const allResData = await Promise.all(
           data.seize_item_info.map(async (item) => {
@@ -137,6 +136,21 @@ export const createCaseAndSeizedItem = async (data: {
               data: {
                 QRbase64: qrCodePathSeizedItem || '',
               },
+            });
+
+            const imgsLinkArray = await Promise.all(
+          
+              item.images?.map(async (img: any) => {
+                
+                const createdImg = await uploadItemImage(img);
+                
+                return createdImg;
+              })
+            );
+            
+            await prisma.seizedItems.update({
+              where: { item_id: createdItem.item_id },
+              data: { images: imgsLinkArray }
             });
   
             return createdItem;
@@ -196,11 +210,13 @@ export const updateCase = async (data: {
   case_status: string;
   filing_date: string;
   acts: any;
+  CaseStatus: string;
   court_order: string;
   closure_date?: string;
   acquired_date: string;
   userId: string;
   bhags: any;
+  images: any;
   seize_item_info: [
     {
       item_id: string;
@@ -220,6 +236,7 @@ export const updateCase = async (data: {
       weight?: string;
       NoOfItems?: string;
       itemStateDescription?: string;
+      images: any;
       price?: string;
     }
   ];
@@ -281,6 +298,24 @@ export const updateCase = async (data: {
         },
       });
 
+      const imgsLinkArray = await Promise.all(
+          
+        data.images?.map(async (img: any) => {
+          if(img.includes('https://')){
+            return img;
+          }else{
+            const createdImg = await uploadItemImage(img);
+            return createdImg;
+          }
+          
+        })
+      );
+      
+      await prisma.caseReg.update({
+        where: { case_id: newCase.case_id },
+        data: { images: imgsLinkArray }
+      });
+
       // Handle seized items
       const newSeizedItems = await Promise.all(
         data.seize_item_info.map(async (item) => {
@@ -314,6 +349,21 @@ export const updateCase = async (data: {
             data: {
               QRbase64: qrCodePathSeizedItem || '',
             },
+          });
+
+          const imgsLinkArray = await Promise.all(
+          
+            item.images?.map(async (img: any) => {
+              
+              const createdImg = await uploadItemImage(img);
+              
+              return createdImg;
+            })
+          );
+          
+          await prisma.seizedItems.update({
+            where: { item_id: createdItem.item_id },
+            data: { images: imgsLinkArray }
           });
 
           return createdItem;

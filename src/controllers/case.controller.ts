@@ -62,6 +62,7 @@ export const createCase = async (req: Request, res: Response) => {
         weight?: string;
         NoOfItems?: string;
         itemStateDescription?: string;
+        images: any;
         price?: string;
       }
     ];
@@ -124,6 +125,9 @@ export const updateCase = async (req: Request, res: Response) => {
     case_status,
     filing_date,
     closure_date,
+    images,
+    bhags,
+    seize_item_info,
     userId,
   } = req.body as {
     case_id: string;
@@ -141,6 +145,7 @@ export const updateCase = async (req: Request, res: Response) => {
     court_order: string;
     closure_date?: string;
     acquired_date: string;
+    images: any;
     userId: string;
     bhags: any;
     seize_item_info: [
@@ -210,6 +215,7 @@ export const updateCase = async (req: Request, res: Response) => {
         acts: req.body.acts,
         closure_date,
         acquired_date,
+        images,
         userId,
         seize_item_info: req.body.seize_item_info,
     };

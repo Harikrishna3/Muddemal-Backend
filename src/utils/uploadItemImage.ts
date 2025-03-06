@@ -1,54 +1,49 @@
-import { Response, Request } from "express";
-import { S3Client, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
-import path from 'path';
-import crypto from 'crypto';
+import fs from "fs";
+import path from "path";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const s3 = new S3Client({
-    region: process.env.REACT_APP_REGION,
-    credentials: {
-      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID || '',
-      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY || '',
-    },
-  });
-  
+  region: process.env.REACT_APP_REGION,
+  credentials: {
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY || '',
+  },
+});
 
-  
-  
-  // Generate a random filename
-  const generateFileName = (originalName: string): string => {
-    const ext = path.extname(originalName);
-    return `${crypto.randomBytes(16).toString("hex")}${ext}`;
-  };
-  
+export const uploadItemImage = async (filePath: string) => {
+  console.log("Uploading file...", filePath);
 
-  export const uploadItemImage = async (req: Request, res: Response) => {
-    console.log("Uploading file...", req.file);
-    
-    try {
-        if (!req.file) {
-             res.status(400).json({ error: "No file uploaded" });
-             return;
-        }
-
-        console.log("Uploaded file:", req.file);
-
-        const file = req.file;
-        const fileName = generateFileName(file.originalname);
-
-        const params = {
-            Bucket: process.env.REACT_APP_S3_BUCKET,
-            Key: fileName,
-            Body: file.buffer,
-            ContentType: file.mimetype,
-        };
-
-        await s3.send(new PutObjectCommand(params));
-
-        const fileUrl = `https://${process.env.REACT_APP_S3_BUCKET}.s3.${process.env.REACT_APP_REGION}.amazonaws.com/${fileName}`;
-        
-        res.json({ message: "File uploaded successfully", fileUrl });
-    } catch (error) {
-        console.error("Error uploading file:", error);
-        res.status(500).json({ error: "Failed to upload file" });
+  try {
+    if (!filePath) {
+      return { error: "No file provided" };
     }
+
+    // Read file into buffer
+    const fileBuffer = fs.readFileSync(filePath);
+
+    // Extract file name and MIME type
+    const fileName = path.basename(filePath);
+    const mimeType = "image/png"; // Change based on file type if needed
+
+    console.log("Uploading:", fileName, "with type:", mimeType);
+
+    const params = {
+      Bucket: process.env.REACT_APP_S3_BUCKET!,
+      Key: fileName,
+      Body: fileBuffer,
+      ContentType: mimeType,
+    };
+
+    await s3.send(new PutObjectCommand(params));
+
+    const fileUrl = `https://${process.env.REACT_APP_S3_BUCKET}.s3.${process.env.REACT_APP_REGION}.amazonaws.com/${fileName}`;
+
+    return fileUrl;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    return { error: "Error uploading file" };
+  }
 };

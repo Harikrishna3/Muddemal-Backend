@@ -14,12 +14,8 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 
 export const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
- 
-    console.log("token",req.headers,"token",req.headers.authorization);
     
     let token = req.headers?.authorization?.split(" ")[1] || "";
-
-  console.log("token",token);
   
     if (!token) {
          res.status(401).json({ message: "Unauthorized access" });

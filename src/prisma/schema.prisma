@@ -58,6 +58,7 @@ model CaseReg {
   crime_number          String        @default("Unknown")
   guilty_details        String        @default("Not specified")
   bhags                 Json?         @default("[]")
+  images                Json?         @default("[]")
   QRbase64  String?  @db.LongText        
   // Timestamps
   // Relationships

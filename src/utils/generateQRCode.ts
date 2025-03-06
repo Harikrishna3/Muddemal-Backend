@@ -14,10 +14,10 @@ interface GenerateQRCodeFunction {
 export const generateQRCode: GenerateQRCodeFunction = async (caseId: string, Model: string): Promise<string | null> => {
     try {
         if (Model === 'case') {
-            console.log("Case QR Code Generation");
+            // console.log("Case QR Code Generation");
             const qrData = `http://localhost:3000/api/showQRCode/${caseId}`;
             const base64Image = await QRCode.toDataURL(qrData);
-            console.log(base64Image,"this is the base64 image");
+            // console.log(base64Image,"this is the base64 image");
             return base64Image;
         } else if (Model === 'seizedItem') {
             console.log("Seized Item QR Code Generation");
