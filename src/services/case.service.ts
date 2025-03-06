@@ -1,5 +1,6 @@
 import prisma from '../config/prisma';
 import { generateQRCode } from '../utils/generateQRCode';
+import { uploadItemImage } from '../utils/uploadItemImage';
 
 export const createCaseAndSeizedItem = async (data: {
   year: number;
@@ -18,7 +19,7 @@ export const createCaseAndSeizedItem = async (data: {
     closure_date?: string;
     acquired_date: string;
     userId: string;
-    
+    images: any;
     seize_item_info: [
           {case_id: string;
           item_category: string;
@@ -84,6 +85,24 @@ export const createCaseAndSeizedItem = async (data: {
             QRbase64: qrCodePath || '',
           },
         });
+
+        const imgsLinkArray = await Promise.all(
+          data.images.map(async (img: any) => {
+            const createdImg = await uploadItemImage(img, null as any);
+            return createdImg;
+          })
+        );
+
+        // Using Prisma's executeRaw as a workaround if the schema can't be modified immediately
+        // await prisma.$executeRaw`UPDATE "CaseReg" SET "images" = ${JSON.stringify(imgsLinkArray)} WHERE "case_id" = ${resData.case_id}`;
+        
+        // Alternatively, if you update your schema, you can keep using the original code:
+        // await prisma.caseReg.update({
+        //   where: { case_id: resData.case_id },
+        //   data: {
+        //     images: imgsLinkArray,
+        //   },  
+        // });
   
         // Handle seized items
         const allResData = await Promise.all(
@@ -317,6 +336,8 @@ export const getCaseStatusCount = async (userId: string) => {
       where: { userId },
       select: { case_id: true, case_status: true }
     });
+    console.log(userId, "userId","getCaseStatusCount");
+    
 
     let openCases = 0;
     let closedCases = 0;

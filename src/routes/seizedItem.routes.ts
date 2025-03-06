@@ -3,6 +3,7 @@ import express from 'express';
 // import { upload } from '../middlewares/googleDriveUpload';
 import multer from 'multer';
 import { createSeizedItem, getAllSeizedItems, addSeizedItems, updateSeizedItem, getASeizedItemsFromCase, getSeizedItem, showQRCodeForSeizedItemData } from '../controllers/seizedItems.controller';
+import { uploadItemImage } from '../utils/uploadItemImage';
 
 
 // const formData = new FormData();
@@ -17,7 +18,7 @@ const router = express.Router();
 router.post('/createSeizedItem', createSeizedItem);
 router.post('/addSeizedItems', addSeizedItems);
 router.post('/updateSeizedItem', updateSeizedItem);
-// router.post("/uploadImage", upload, uploadItemImage);
+router.post("/uploadImage", upload, uploadItemImage);
 
 router.get('/getAllSeizedItems/:userId', getAllSeizedItems);
 router.get('/getASeizedItemsFromCase/:case_id', getASeizedItemsFromCase);

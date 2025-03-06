@@ -1,6 +1,4 @@
 import { Response, Request } from "express";
-import multer from "multer";
-import dotenv from "dotenv";
 import { S3Client, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
 import path from 'path';
 import crypto from 'crypto';
@@ -42,12 +40,11 @@ const s3 = new S3Client({
             Key: fileName,
             Body: file.buffer,
             ContentType: file.mimetype,
-            ACL: "public-read" as ObjectCannedACL,
         };
 
         await s3.send(new PutObjectCommand(params));
 
-        const fileUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+        const fileUrl = `https://${process.env.REACT_APP_S3_BUCKET}.s3.${process.env.REACT_APP_REGION}.amazonaws.com/${fileName}`;
         
         res.json({ message: "File uploaded successfully", fileUrl });
     } catch (error) {

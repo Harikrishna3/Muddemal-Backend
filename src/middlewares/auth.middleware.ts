@@ -1,10 +1,37 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
+// Extend the Express Request interface
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
     }
-    // Add your token verification logic here
-    next();
+  }
+}
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+
+
+export const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
+ 
+    console.log("token",req.headers,"token",req.headers.authorization);
+    
+    let token = req.headers?.authorization?.split(" ")[1] || "";
+
+  console.log("token",token);
+  
+    if (!token) {
+         res.status(401).json({ message: "Unauthorized access" });
+         return;
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);        
+        req.user = decoded;
+        next();
+    } catch (error) {
+         res.status(403).json({ message: "Invalid or expired token" });
+         return;
+    }
 };

@@ -89,6 +89,7 @@ model SeizedItems {
   price            String?    @default("Not Specified")
   itemStateDescription String? @default("Not Specified")
   QRbase64  String?  @db.LongText    
+  images           Json?    @default("[]")
 
 
   // Timestamps
@@ -96,7 +97,6 @@ model SeizedItems {
   updatedAt DateTime @default(now()) @updatedAt
 
   // Relationships
-  images           Image[]
 
   // Foreign key linking to Case
   case CaseReg @relation(fields: [case_id], references: [case_id], onDelete: Cascade)
@@ -125,17 +125,6 @@ model Court {
 }
 
 // Supporting Models
-model Image {
-  id          String      @id @default(uuid())
-  item_id     String
-  url         String      @db.Text
-  type        String      @default("image")
-  // Relation to Seized_Items
-  seizedItem  SeizedItems @relation(fields: [item_id], references: [item_id], onDelete: Cascade)
-
-  @@index([item_id])
-}
-
 model QR {
   id              String @id @default(uuid())
   seizedItem_Name String

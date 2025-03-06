@@ -7,8 +7,8 @@ export const createPoliceStation = async (req: Request, res: Response) => {
     try{
         const policeStation = await createPoliceStationService(name, region, address, state, district, taluka);
         res.status(201).json(policeStation);
-    }catch{
-        res.status(400).json({message: "Error in creating police station"});
+    }catch(err){
+        res.status(400).json({message: "Error in creating police station",err});
     }
 }
 

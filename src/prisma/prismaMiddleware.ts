@@ -4,6 +4,8 @@ import prisma from '../config/prisma';
 const applyMiddleware = (prisma: PrismaClient) => {
   prisma.$use(async (params, next) => {
     const { model, action, args } = params;
+    // console.log("params", params,"action", action, "model", model);
+    
     // console.log(`Model: ${model}, Action: ${action}`);
     
     const trackedModels = ['CaseReg', 'SeizedItems', 'Court'];
@@ -97,7 +99,7 @@ async function logAction(
         entityId, 
         actionType,
         changedData,
-        userId: "a6ce38db-c3fd-4817-9779-9619a24d75fa",
+        userId: "c05df746-14a7-409f-bec2-8eb4101fa306",
       },
     });
 

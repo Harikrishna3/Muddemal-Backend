@@ -23,6 +23,7 @@ export const createCase = async (req: Request, res: Response) => {
     case_status,
     filing_date,
     closure_date,
+    images,
     userId,
   } = req.body as {
     year: number;
@@ -41,6 +42,7 @@ export const createCase = async (req: Request, res: Response) => {
     acquired_date: string;
     userId: string;
     bhags: any;
+    images: any;
     seize_item_info: [
       {
         case_id: string;
@@ -82,6 +84,7 @@ export const createCase = async (req: Request, res: Response) => {
       closure_date,
       acquired_date,
       userId,
+      images,
       seize_item_info: req.body.seize_item_info,
     });
 
@@ -228,6 +231,8 @@ export const updateCase = async (req: Request, res: Response) => {
 
 export const getCaseStatusCount = async (req: Request, res: Response) => {
   try {
+    console.log("Getting case status count for user:", req.params.userId);
+    
     const caseStatusCount = await GCSC(req.params.userId);
     res.status(200).json(caseStatusCount);
   } catch (error) {

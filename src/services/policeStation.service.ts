@@ -19,8 +19,10 @@ export const createPoliceStationService = async (
             taluka,
         },
     });
-}catch{
-    throw new Error("Error in creating police station");
+}catch(err){
+    console.log(err);
+    
+    throw new Error("Error in creating police station" + err);
 }
 };
 
