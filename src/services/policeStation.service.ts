@@ -38,3 +38,15 @@ export const getAllPoliceStationsService = async () => {
     throw new Error("Error in fetching police stations");
 }
 };
+
+export const getAPoliceStation = async (id:string) => {
+    try{
+    return prisma.policeStation.findUnique({
+        where: {
+            id,
+        },
+    });
+}catch{
+    throw new Error("Error in fetching police station");
+}   
+};

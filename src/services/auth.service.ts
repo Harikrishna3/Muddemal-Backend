@@ -153,7 +153,7 @@ export const logout = (req: Request, res: Response) => {
         sameSite: "strict"
     });
 
-    return res.status(200).json({ message: "Logged out successfully" });
+     res.status(200).json({ message: "Logged out successfully" });
 };
 
 
