@@ -5,7 +5,7 @@ import {
   getAllCases as GAC,
   getCaseStatusCount as GCSC,
   showQRCode,
-  
+  uploadFir,
 } from "../services/case.service";
 import { Request, Response } from "express";
 import prisma from "../config/prisma";
@@ -259,5 +259,17 @@ export const showQRCodeData = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching QR code data:", error);
     res.status(400).json({ message: "Error in fetching QR code data" });
+  }
+};
+
+export const uploadFirHandler = async (req: Request, res: Response) => {
+  try {
+    console.log("Uploading FIR:", req.file, "and");
+
+    await uploadFir(req.file);
+    res.status(200).json({ message: "FIR uploaded successfully" });
+  } catch (error) {
+    console.error("Error uploading FIR:", error);
+    res.status(400).json({ message: "Error in uploading FIR" });
   }
 };
