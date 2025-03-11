@@ -9,9 +9,11 @@ import tempfile
 import numpy as np
 import cv2
 import io
+from dotenv import load_dotenv
 
+load_dotenv()
 # OpenAI API Key
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 # Function to extract text from a PDF file
