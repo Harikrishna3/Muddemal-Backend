@@ -167,6 +167,7 @@ export const updateCase = async (req: Request, res: Response) => {
         weight?: string;
         NoOfItems?: string;
         itemStateDescription?: string;
+        images: any;
         price?: string;
       }
     ];

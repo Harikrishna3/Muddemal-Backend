@@ -298,9 +298,11 @@ export const updateCase = async (data: {
         },
       });
 
+      console.log(data.images, "data.images");  
+      
       const imgsLinkArray = await Promise.all(
           
-        data.images?.map(async (img: any) => {
+        data?.images?.map(async (img: any) => {
           if(img.includes('https://')){
             return img;
           }else{
@@ -351,6 +353,8 @@ export const updateCase = async (data: {
             },
           });
 
+          console.log(item.images, "item.images");
+          
           const imgsLinkArray = await Promise.all(
           
             item.images?.map(async (img: any) => {
