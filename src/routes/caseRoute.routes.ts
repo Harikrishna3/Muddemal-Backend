@@ -9,7 +9,6 @@ const storage = multer.diskStorage({
       cb(null, 'uploads/'); // Make sure this folder exists or create it dynamically
     },
     filename: (req, file, cb) => {
-      // Append timestamp to avoid file name conflicts
       cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
   });
