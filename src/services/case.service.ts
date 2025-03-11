@@ -244,21 +244,22 @@ export const updateCase = async (data: {
   try {
     const result = await prisma.$transaction(async (prisma) => {
       // Delete old seized items
-      await prisma.seizedItems.deleteMany({
-        where: {
-          case_id: data.case_id,
-        },
-      });
+      // await prisma.seizedItems.deleteMany({
+      //   where: {
+      //     case_id: data.case_id,
+      //   },
+      // });
 
-      // Delete old case
-      await prisma.caseReg.delete({
-        where: {
-          case_id: data.case_id,
-        },
-      });
+      // // Delete old case
+      // await prisma.caseReg.delete({
+      //   where: {
+      //     case_id: data.case_id,
+      //   },
+      // });
 
       // Create new case
-      const newCase = await prisma.caseReg.create({
+      const newCase = await prisma.caseReg.update({
+        where: { case_id: data.case_id },
         data: {
           year: data.year,
           case_number: data.case_number,
@@ -288,15 +289,15 @@ export const updateCase = async (data: {
       });
 
       // Generate QR code for new case
-      const qrCodePath = await generateQRCode(newCase.case_id, 'case');
+      // const qrCodePath = await generateQRCode(newCase.case_id, 'case');
 
-      // Update new case with QR code
-      await prisma.caseReg.update({
-        where: { case_id: newCase.case_id },
-        data: {
-          QRbase64: qrCodePath || '',
-        },
-      });
+      // // Update new case with QR code
+      // await prisma.caseReg.update({
+      //   where: { case_id: newCase.case_id },
+      //   data: {
+      //     QRbase64: qrCodePath || '',
+      //   },
+      // });
 
       const imgsLinkArray = await Promise.all(
           
@@ -319,8 +320,30 @@ export const updateCase = async (data: {
       // Handle seized items
       const newSeizedItems = await Promise.all(
         data.seize_item_info.map(async (item) => {
-          const createdItem = await prisma.seizedItems.create({
-            data: {
+          const createdItem = await prisma.seizedItems.upsert({
+            where: { item_id: item.item_id },
+            update: {
+              case_id: newCase.case_id,
+              item_category: item.item_category,
+              sub_category: item.sub_category,
+              item_description: item.item_description,
+              seized_date: item.seized_date,
+              seized_location: item.seized_location,
+              seizing_officer: item.seizing_officer,
+              current_status: item.current_status,
+              release_date: item.release_date,
+              released_to: item.released_to,
+              remarks: item.remarks,
+              Bhag: item.Bhag,
+              depositDate: item.depositDate,
+              fromWhomReceived: item.fromWhomReceived,
+              weight: item.weight,
+              NoOfItems: item.NoOfItems,
+              itemStateDescription: item.itemStateDescription,
+              price: item.price
+            },
+            create: {
+              item_id: item.item_id,
               case_id: newCase.case_id,
               item_category: item.item_category,
               sub_category: item.sub_category,

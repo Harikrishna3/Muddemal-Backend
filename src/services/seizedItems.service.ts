@@ -1,5 +1,6 @@
 import prisma from "../config/prisma";
 import { ItemCategory, ItemStatus } from "@prisma/client";
+import { uploadItemImage } from "../utils/uploadItemImage";
 
 export const createSeizedItem = async (data: {
     case_id: string;
@@ -213,6 +214,7 @@ export const updateSeizedItem = async (data: {
     NoOfItems?: string;
     itemStateDescription?: string;
     price?: string;
+    images?: any;
 }) => {
     try {
         const resData = await prisma.seizedItems.update({
@@ -238,6 +240,22 @@ export const updateSeizedItem = async (data: {
             },
         });
 
+        let imgsLinkArray:any = [];
+        
+        if (data.images && Array.isArray(data.images)) {
+            imgsLinkArray = await Promise.all(
+                data.images.map(async (img: any) => {
+                    const createdImg = await uploadItemImage(img);
+                    return createdImg;
+                })
+            );
+        }
+        await prisma.seizedItems.update({
+            where: { item_id: resData.item_id },
+            data: { images: imgsLinkArray }
+          });
+          console.log("Images uploaded successfully", imgsLinkArray, resData.item_id, resData);
+          
         return resData;
     } catch (error) {
         console.error("Error updating seized item:", error);
