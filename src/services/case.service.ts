@@ -450,32 +450,4 @@ export const showQRCode = async (id: string) => {
   }
 }
 
-export const uploadFir = async (firFile: any) => {
-  try {
-    // const firFilePath = await uploadItemImage(firFile);
-
-    // await prisma.caseReg.update({
-    //   where: { case_id: caseId },
-    //   data: { firFile: firFilePath }
-    // });
-
- console.log(firFile,"firFile");
- 
-    return { message: "FIR uploaded successfully" };
-  } catch (error) {
-    console.log(error, "error");
-    return { message: "Error in uploading FIR", error };
-  }
-}
-// export const getQRSeizedItemData = async (id: string) => {
-//   try {
-//     const seizedItemData = await prisma.seizedItems.findUnique({
-//       where: { item_id: id }
-//     });
-
-//     return seizedItemData;
-//   } catch {
-//     return { message: "Seized item data not    found" };
-//   }
-// }
 
