@@ -323,7 +323,7 @@ export const updateCase = async (data: {
       const newSeizedItems = await Promise.all(
         data.seize_item_info.map(async (item) => {
           const createdItem = await prisma.seizedItems.upsert({
-            where: { item_id: item.item_id },
+            where: { item_id: item.item_id || '' },
             update: {
               case_id: newCase.case_id,
               item_category: item.item_category,
