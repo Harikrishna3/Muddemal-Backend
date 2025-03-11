@@ -139,12 +139,14 @@ export const createCaseAndSeizedItem = async (data: {
             });
 
             const imgsLinkArray = await Promise.all(
-          
+            
               item.images?.map(async (img: any) => {
-                
-                const createdImg = await uploadItemImage(img);
-                
-                return createdImg;
+                if(img.includes('https://')){
+                  return img;
+                }else{
+                  const createdImg = await uploadItemImage(img);
+                  return createdImg;
+                }
               })
             );
             
