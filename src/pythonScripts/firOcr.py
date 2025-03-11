@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import openai
 import json
 import easyocr
@@ -9,7 +10,7 @@ import tempfile
 import numpy as np
 import cv2
 import io
-from dotenv import load_dotenv
+
 
 load_dotenv()
 # OpenAI API Key
