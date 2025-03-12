@@ -319,6 +319,23 @@ export const updateCase = async (data: {
         data: { images: imgsLinkArray }
       });
 
+      const existingItems = await prisma.seizedItems.findMany({
+        where: { case_id: data.case_id },
+      });
+      
+      const incomingItemIds = data.seize_item_info.map((item) => item.item_id);
+      const existingItemIds = existingItems.map((item) => item.item_id);
+      
+      // Step 2: Delete removed items
+      const itemsToDelete = existingItemIds.filter(id => !incomingItemIds.includes(id));
+      
+      await prisma.seizedItems.deleteMany({
+        where: {
+          item_id: { in: itemsToDelete }
+        }
+      });
+      
+
       // Handle seized items
       const newSeizedItems = await Promise.all(
         data.seize_item_info.map(async (item) => {
