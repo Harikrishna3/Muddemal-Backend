@@ -53,12 +53,13 @@ model CaseReg {
   userId                String
   user                  User          @relation(fields: [userId], references: [id])
   acts                  Json?
-  acquired_date         String
   court_order           String        @default("Pending")
   crime_number          String        @default("Unknown")
   guilty_details        String        @default("Not specified")
   bhags                 Json?         @default("[]")
   images                Json?         @default("[]")
+  seized_date           String        @default("Not Specified")
+  acquire_date          String        @default("Not Specified")
   QRbase64  String?  @db.LongText        
   // Timestamps
   // Relationships

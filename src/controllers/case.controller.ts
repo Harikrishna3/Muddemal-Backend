@@ -15,6 +15,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import * as tmp from 'tmp'; // Temporary file module
 import { Buffer } from 'buffer'; // Import Buffer from node.js
+import { createLogs } from "../services/logs.service";
   
   // Configure multer for in-memory storage
   const storage = multer.memoryStorage();
@@ -28,11 +29,12 @@ import { Buffer } from 'buffer'; // Import Buffer from node.js
       crime_number,
       court_order,
       policeStationId,
-      acquired_date,
       investigating_officer,
       case_status,
       filing_date,
       closure_date,
+      acquire_date,
+      seized_date,
       images,
       userId,
     } = req.body as {
@@ -49,7 +51,8 @@ import { Buffer } from 'buffer'; // Import Buffer from node.js
       acts: any;
       court_order: string;
       closure_date?: string;
-      acquired_date: string;
+      acquire_date: string;
+      seized_date: string;
       userId: string;
       bhags: any;
       images: any;
@@ -93,7 +96,8 @@ import { Buffer } from 'buffer'; // Import Buffer from node.js
         court_order: court_order,
         acts: req.body.acts,
         closure_date,
-        acquired_date,
+        acquire_date,
+        seized_date,
         userId,
         images,
         seize_item_info: req.body.seize_item_info,
@@ -139,7 +143,7 @@ import { Buffer } from 'buffer'; // Import Buffer from node.js
       bhags,
       seize_item_info,
       userId,
-    } = req.body as {
+    } = req.body.finalData as {
       case_id: string;
       year: number;
       case_number: string;
@@ -227,12 +231,15 @@ import { Buffer } from 'buffer'; // Import Buffer from node.js
           acquired_date,
           images,
           userId,
-          seize_item_info: req.body.seize_item_info,
+          seize_item_info: req.body.finalData.seize_item_info,
       };
   
       if (closure_date) caseData.closure_date = closure_date;
   
       const response = await UC(caseData);
+      
+      createLogs("CaseReg",case_id,"Updated",req.body.mergedDiff);
+
       res.status(200).json({ success: true, data: response });
     } catch (error: any) {
       console.error("Update case error:", error);

@@ -7,6 +7,7 @@ import login from './routes/auth.routes';
 import court from './routes/court.routes';
 import cors from 'cors';
 import path from 'path';
+import prisma from './config/prisma';
 // import { authMiddleware } from './middlewares/auth.middleware';
 
 // Extend Express Request interface
@@ -29,14 +30,37 @@ app.use('/api/test', (req, res) => {
     res.send('Hello World');
 });
 
-// app.use((req, res, next) => {
-//     const userIdHeader = req.headers['Authorization']; // Change to lowercase
-//     console.log('userIdHeader', userIdHeader);
-//     console.log('req.headers', req.headers);
-    
-//     req.userId = Array.isArray(userIdHeader) ? userIdHeader[0] : userIdHeader;
-//     next();
-// });
+app.use(async (req, res, next) => {
+  // const userIdHeader = req.headers['Authorization']; // Change to lowercase
+  // console.log('userIdHeader', userIdHeader);
+  // console.log('req.headers', req.headers);
+  
+  // req.userId = Array.isArray(userIdHeader) ? userIdHeader[0] : userIdHeader;
+  // console.log('req.userId');
+  
+  // console.log('req', req.body);
+  
+  // if (req.userId) {
+  //   try {
+  //     // store request data in logs table
+  //    let tt = await prisma.logs.create({
+  //       data: {
+  //         entityType: 'CaseReg',
+  //         entityId: 'case_id',
+  //         actionType: 'Created',
+  //         changedData: req.body,
+  //         userId: req.userId,
+  //       },
+  //     });
+  //     console.log('tt', tt);
+      
+  //   } catch (error) {
+  //     console.error('Error logging request:', error);
+  //   }
+  // }
+  
+  next();
+});
 
 
 app.use('/api', userRoutes);

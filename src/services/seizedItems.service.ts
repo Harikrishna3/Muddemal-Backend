@@ -254,7 +254,6 @@ export const updateSeizedItem = async (data: {
             where: { item_id: resData.item_id },
             data: { images: imgsLinkArray }
           });
-          console.log("Images uploaded successfully", imgsLinkArray, resData.item_id, resData);
           
         return resData;
     } catch (error) {

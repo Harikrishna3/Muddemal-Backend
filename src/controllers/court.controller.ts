@@ -46,8 +46,8 @@ export const addCourtDeatils = async (req: Request, res: Response, next: NextFun
 };
 
 export const getCourtDetails = async (req: Request, res: Response, next: NextFunction) => {
-    const [id] = req.params.id;
     try {
+        const { id } = req.params;
         const court = await getCourtDetailsService(id);
         res.status(200).json(court);
     }

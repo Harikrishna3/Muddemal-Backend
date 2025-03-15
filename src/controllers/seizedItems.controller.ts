@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import { createSeizedItem as cSI, createManySeizedItem as CMSI, getAllSeizedItems as GASI ,getASeizedItemsFromCase as GASIFC, updateSeizedItem as USI, getSeizedItem as GSI, showQRCodeForSeizedItem} from "../services/seizedItems.service";
 import { upload, uploadToDrive } from '../middlewares/googleDriveUpload';
+import { createLogs } from "../services/logs.service";
 
 
 interface MulterRequest extends Request {
@@ -91,7 +92,7 @@ export const addSeizedItems = async (req: Request, res: Response) => {
 }
 
 export const updateSeizedItem = async (req: Request, res: Response) => {
-    const { item_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks, Bhag, depositDate, fromWhomReceived, weight, NoOfItems, itemStateDescription ,images} = req.body; 
+    const { item_id, item_category, sub_category, item_description, seized_date, seized_location, seizing_officer, current_status, release_date, released_to, remarks, Bhag, depositDate, fromWhomReceived, weight, NoOfItems, itemStateDescription ,images} = req.body.UpdatedData; 
     try {
         const seizedItem = await USI({
             item_id,
@@ -113,6 +114,7 @@ export const updateSeizedItem = async (req: Request, res: Response) => {
             itemStateDescription,
             images
         });
+        createLogs("SeizedItem",item_id,"Updated",req.body.UpdatedDiff)
         res.status(200).json(seizedItem);
     } catch {
         res.status(400).json({ message: "Error in updating seized item" });

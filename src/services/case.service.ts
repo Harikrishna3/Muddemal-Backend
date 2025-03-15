@@ -18,7 +18,8 @@ export const createCaseAndSeizedItem = async (data: {
     crime_number:string;
     court_order: string;
     closure_date?: string;
-    acquired_date: string;
+    acquire_date: string;
+    seized_date: string;
     userId: string;
     images: any;
     seize_item_info: [
@@ -65,6 +66,8 @@ export const createCaseAndSeizedItem = async (data: {
             acts: data.acts,
             filing_date: data.filing_date,
             closure_date: data.closure_date,
+            acquire_date: data.acquire_date,
+            seized_date: data.seized_date,
             bhags: data.bhags,
             court_order: data.court_order,
             acquired_date: new Date().toISOString(),
@@ -323,11 +326,11 @@ export const updateCase = async (data: {
         where: { case_id: data.case_id },
       });
       
-      const incomingItemIds = data.seize_item_info.map((item) => item.item_id);
-      const existingItemIds = existingItems.map((item) => item.item_id);
+      const incomingItemIds = data?.seize_item_info?.map((item) => item.item_id);
+      const existingItemIds = existingItems?.map((item) => item.item_id);
       
       // Step 2: Delete removed items
-      const itemsToDelete = existingItemIds.filter(id => !incomingItemIds.includes(id));
+      const itemsToDelete = existingItemIds?.filter(id => !incomingItemIds?.includes(id));
       
       await prisma.seizedItems.deleteMany({
         where: {
@@ -338,7 +341,7 @@ export const updateCase = async (data: {
 
       // Handle seized items
       const newSeizedItems = await Promise.all(
-        data.seize_item_info.map(async (item) => {
+        (data.seize_item_info || []).map(async (item) => {
           const createdItem = await prisma.seizedItems.upsert({
             where: { item_id: item.item_id || '' },
             update: {

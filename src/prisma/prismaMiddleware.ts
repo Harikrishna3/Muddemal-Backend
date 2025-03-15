@@ -37,6 +37,8 @@ const applyMiddleware = (prisma: PrismaClient) => {
     if (action === 'update') {
       actionType = ActionType.Updated;
       entityId = args.where?.[selectedModelsID] ?? null;
+      // console.log(args, "args.data");
+      
       
       const existingData = await (prisma as any)[model!.charAt(0).toLowerCase() + model!.slice(1)]?.findUnique({ where: { [selectedModelsID]: entityId } });
 
@@ -93,15 +95,15 @@ async function logAction(
     // const safeEntityId = BigInt(entityId);
     // console.log("Logging action for", model, entityId, actionType, changedData);
     
-    await prisma.logs.create({
-      data: {
-        entityType: model,
-        entityId, 
-        actionType,
-        changedData,
-        userId: "742f0764-3fa5-4683-a3c7-1ec91c16b6fe",
-      },
-    });
+    // await prisma.logs.create({
+    //   data: {
+    //     entityType: model,
+    //     entityId, 
+    //     actionType,
+    //     changedData,
+    //     userId: "742f0764-3fa5-4683-a3c7-1ec91c16b6fe",
+    //   },
+    // });
 
     // console.log(`Log recorded for ${model} - Action: ${actionType}`);
   } catch (error) {
