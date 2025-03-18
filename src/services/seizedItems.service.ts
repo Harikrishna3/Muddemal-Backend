@@ -1,6 +1,7 @@
 import prisma from "../config/prisma";
 import { ItemCategory, ItemStatus } from "@prisma/client";
 import { uploadItemImage } from "../utils/uploadItemImage";
+import { generateQRCode } from "../utils/generateQRCode";
 
 export const createSeizedItem = async (data: {
     case_id: string;
@@ -114,6 +115,30 @@ export const createManySeizedItem = async (data: Array<{
             price: item.price,
         })),
     });
+
+    const createdItems = await prisma.seizedItems.findMany({
+        where: {
+            case_id: {
+                in: data.map(item => item.case_id),
+            },
+        },
+    });
+
+    await Promise.all(
+        createdItems.map(async (createdItem: any) => {
+            const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id, 'seizedItem');
+            await prisma.seizedItems.update({
+                where: { item_id: createdItem.item_id },
+                data: {
+                    QRbase64: qrCodePathSeizedItem || '',
+                },
+            });
+        })
+    );
+
+    return createdItems;
+
+    
 
     return resData;
 }catch(error){
