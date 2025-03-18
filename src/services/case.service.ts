@@ -70,7 +70,6 @@ export const createCaseAndSeizedItem = async (data: {
             seized_date: data.seized_date,
             bhags: data.bhags,
             court_order: data.court_order,
-            acquired_date: new Date().toISOString(),
             user: {
               connect: {
                 id: data.userId,
@@ -284,7 +283,6 @@ export const updateCase = async (data: {
           closure_date: data.closure_date,
           bhags: data.bhags,
           court_order: data.court_order,
-          acquired_date: new Date().toISOString(),
           user: {
             connect: {
               id: data.userId,
