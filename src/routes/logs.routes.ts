@@ -1,10 +1,11 @@
-import e from 'express';
 import express from 'express';
-import { getLogs } from '../services/logs.service';
+import { getCaseIdCrimeNoCaseNo, getLogs, getLogsByCaseId } from '../controllers/logs.controller';
 
 const router = express.Router();
 
-router.post('/getLogs', getLogs);
+router.get('/getLogs', getLogs);
+router.get('/getCaseIdCrimeNoCaseNo', getCaseIdCrimeNoCaseNo);
+router.get('/getLogsByCaseId/:caseId', getLogsByCaseId);
 
-    
+
 export default router;

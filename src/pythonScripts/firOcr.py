@@ -17,6 +17,7 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
+
 # Function to extract text from a PDF file
 def extract_text_from_pdf(pdf_bytes):
     reader = easyocr.Reader(["en", "mr"])  # English + Marathi support

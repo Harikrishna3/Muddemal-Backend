@@ -39,7 +39,7 @@ export const createCaseAndSeizedItem = async (data: {
           fromWhomReceived?: string;
           weight?: string;
           NoOfItems?: string;
-          itemStateDescription?: string;
+          itemStateDescription?: any;
           images: any;
           price?: string; 
         }
@@ -195,7 +195,8 @@ export const getAllCases = async (userId:string) => {
         },
       });
       return cases;
-  }catch{
+  }catch(error){
+    console.log(error,"error");
     return {message: "Error in fetching cases"};
   }
 };
@@ -238,7 +239,7 @@ export const updateCase = async (data: {
       fromWhomReceived?: string;
       weight?: string;
       NoOfItems?: string;
-      itemStateDescription?: string;
+      itemStateDescription?: any;
       images: any;
       price?: string;
     }

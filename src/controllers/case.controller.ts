@@ -102,7 +102,12 @@ import { createLogs } from "../services/logs.service";
         images,
         seize_item_info: req.body.seize_item_info,
       });
-  
+      
+      if ("resData" in newCase && "case_id" in newCase.resData) {
+        createLogs("CaseReg", newCase.resData.case_id, "Created", req.body);
+      } else {
+        console.error("case_id not found in newCase");
+      }
       res.status(201).json(newCase);
     } catch (error) {
       res.status(400).json({ message: "Error in creating case", error });

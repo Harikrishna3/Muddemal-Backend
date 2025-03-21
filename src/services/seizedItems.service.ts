@@ -20,7 +20,7 @@ export const createSeizedItem = async (data: {
     fromWhomReceived?: string;
     weight?: string;
     NoOfItems?: string;
-    itemStateDescription?: string;
+    itemStateDescription?: any;
     price?: string;
 
 }) => {
@@ -70,7 +70,7 @@ export const createManySeizedItem = async (data: Array<{
     fromWhomReceived?: string;
     weight?: string;
     NoOfItems?: string;
-    itemStateDescription?: string;
+    itemStateDescription?: any;
     price?: string;
 }>) => {
     try{
@@ -89,7 +89,7 @@ export const createManySeizedItem = async (data: Array<{
             remarks: string
             Bhag?: string;
             depositDate?: string;
-            fromWhomReceived?: string;
+            fromWhomReceived?: any;
             weight?: string;
             NoOfItems?: string;
             itemStateDescription?: string;
@@ -111,7 +111,7 @@ export const createManySeizedItem = async (data: Array<{
             fromWhomReceived: item.fromWhomReceived,
             weight: item.weight,
             NoOfItems: item.NoOfItems,
-            itemStateDescription: item.itemStateDescription,
+            itemStateDescription: item.itemStateDescription || '',
             price: item.price,
         })),
     });

@@ -5,6 +5,7 @@ import caseRoutes from './routes/caseRoute.routes';
 import seizedItem from './routes/seizedItem.routes';
 import login from './routes/auth.routes';
 import court from './routes/court.routes';
+import logs from './routes/logs.routes';
 import cors from 'cors';
 import path from 'path';
 import prisma from './config/prisma';
@@ -69,5 +70,6 @@ app.use('/api', caseRoutes);
 app.use('/api', seizedItem);
 app.use('/api', login);
 app.use('/api', court);
+app.use('/api', logs);
 
 export default app;

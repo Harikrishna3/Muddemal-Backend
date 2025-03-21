@@ -41,7 +41,7 @@ model PoliceStation {
 model CaseReg {
   case_id               String        @id @default(uuid())
   case_number           String
-  case_description      String
+  case_description      String        @db.Text
   policeStationId       String
   policeStation         PoliceStation @relation(fields: [policeStationId], references: [id])
   investigating_officer String        @db.VarChar(100)
@@ -55,7 +55,7 @@ model CaseReg {
   acts                  Json?
   court_order           String        @default("Pending")
   crime_number          String        @default("Unknown")
-  guilty_details        String        @default("Not specified")
+  guilty_details        String        @db.Text     
   bhags                 Json?         @default("[]")
   images                Json?         @default("[]")
   seized_date           String        @default("Not Specified")
@@ -75,7 +75,7 @@ model SeizedItems {
   case_id          String
   item_category    String
   sub_category     String?     @db.VarChar(50)
-  item_description String?
+  item_description String?     @db.Text
   seized_date      String
   seized_location  String     @db.VarChar(255)
   seizing_officer  String     @db.VarChar(100)
@@ -89,7 +89,7 @@ model SeizedItems {
   weight           String?     @default("Not Specified")
   NoOfItems        String?    @default("Not Specified")
   price            String?    @default("Not Specified")
-  itemStateDescription String? @default("Not Specified")
+  itemStateDescription String  @db.Text 
   QRbase64  String?  @db.LongText    
   images           Json?    @default("[]")
 
