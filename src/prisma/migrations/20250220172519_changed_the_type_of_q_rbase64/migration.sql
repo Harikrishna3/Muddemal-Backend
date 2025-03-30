@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE `CaseReg` MODIFY `QRbase64` LONGTEXT NOT NULL;
-
--- AlterTable
-ALTER TABLE `SeizedItems` MODIFY `QRbase64` LONGTEXT NOT NULL;

@@ -13,21 +13,12 @@ interface GenerateQRCodeFunction {
 
 export const generateQRCode: GenerateQRCodeFunction = async (caseId: string, Model: string): Promise<string | null> => {
     try {
-        if (Model === 'case') {
-            // console.log("Case QR Code Generation");
-            const qrData = `http://localhost:3000/api/showQRCode/${caseId}`;
-            const base64Image = await QRCode.toDataURL(qrData);
-            // console.log(base64Image,"this is the base64 image");
-            return base64Image;
-        } else if (Model === 'seizedItem') {
-            console.log("Seized Item QR Code Generation");
-            const qrData = `http://localhost:3000/api/showQRCodeforSeizeItems/${caseId}`;
-            const base64Image = await QRCode.toDataURL(qrData);
-            return base64Image;
-        }
+        const baseUrl = 'http://localhost:3000/api';
+        const endpoint = Model === 'case' ? 'showQRCode' : 'showQRCodeforSeizeItems';
+        const qrData = `${baseUrl}/${endpoint}/${caseId}`;
+        return await QRCode.toDataURL(qrData);
     } catch (err) {
         console.error("QR Code Generation Error:", err);
         return null;
     }
-    return null;
 };

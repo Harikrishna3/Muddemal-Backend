@@ -40,16 +40,8 @@ export const getCaseIdCrimeNoCaseNo = async () => {
       case_id: true,
       case_number: true,
       crime_number: true,
-      },
-      where: {
-      createdAt: {
-        gte: new Date('2025-03-21T00:00:00.000Z'),
-        lt: new Date('2025-03-22T00:00:00.000Z'),
-      },
-      },
-      orderBy: {
-      createdAt: 'desc',
-      },
+      }
+      
     });
     return caseId;
   } catch (error) {
@@ -63,6 +55,9 @@ export const getLogsByCaseId = async (caseId: string) => {
     const logs = await prisma.logs.findMany({
       where: {
         entityId: caseId,
+      },
+      orderBy: {
+        timestamp: "asc",
       },
     });
     return logs;

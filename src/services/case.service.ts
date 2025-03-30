@@ -1,7 +1,7 @@
 
 import prisma from '../config/prisma';
 import { generateQRCode } from '../utils/generateQRCode';
-import { uploadItemImage } from '../utils/uploadItemImage';
+import { deleteUploadedImage, uploadItemImage } from '../utils/uploadItemImage';
 
 export const createCaseAndSeizedItem = async (data: {
   year: number;
@@ -419,6 +419,16 @@ export const updateCase = async (data: {
     return result;
   } catch (error) {
     console.log(error, "error");
+
+       // Rollback manually for uploads
+       for (const img of data.images) {
+        await deleteUploadedImage(img);
+      }
+      for (const item of data.seize_item_info) {
+        for (const img of item.images) {
+          await deleteUploadedImage(img);
+        }
+      }
     return { message: "Error in updating case", error };
   }
 };
