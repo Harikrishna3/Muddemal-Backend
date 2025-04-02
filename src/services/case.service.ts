@@ -90,11 +90,8 @@ export const createCaseAndSeizedItem = async (data: {
         });
 
         const imgsLinkArray = await Promise.all(
-          
-          (data.images ?? []).map(async (img: any) => {
-            
+          (Array.isArray(data.images) ? data.images : []).map(async (img: any) => {
             const createdImg = await uploadItemImage(img);
-            
             return createdImg;
           })
         );
@@ -141,7 +138,7 @@ export const createCaseAndSeizedItem = async (data: {
             });
 
             const imgsLinkArray = await Promise.all(
-              (item.images ?? []).map(async (img: any) => {
+              (Array.isArray(item.images) ? item.images : []).map(async (img: any) => {
                 if (img.includes('https://')) {
                   return img;
                 } else {
