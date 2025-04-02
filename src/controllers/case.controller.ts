@@ -104,7 +104,7 @@ import { createLogs } from "../services/logs.service";
       });
       
       if ("resData" in newCase && "case_id" in newCase.resData) {
-        createLogs("CaseReg", newCase.resData.case_id, "Created", req.body);
+        createLogs("CaseReg", newCase.resData.case_id, "Created", newCase);
       } else {
         console.error("case_id not found in newCase");
       }
