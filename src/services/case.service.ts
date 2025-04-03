@@ -76,26 +76,11 @@ export const createCaseAndSeizedItem = async (data: {
               id: data.userId,
             },
           },
-        },
-      });
-
-      // Generate QR code for case
-      const qrCodePath = await generateQRCode(resData.case_id, 'case');
-
-      // Update case with QR code
-      await prisma.caseReg.update({
-        where: { case_id: resData.case_id },
-        data: {
-          QRbase64: qrCodePath || '',
-        },
-      });
+        });
 
       const imgsLinkArray = await Promise.all(
-
-        (data.images ?? []).map(async (img: any) => {
-
+        (Array.isArray(data.images) ? data.images : []).map(async (img: any) => {
           const createdImg = await uploadItemImage(img);
-
           return createdImg;
         })
       );
@@ -142,7 +127,7 @@ export const createCaseAndSeizedItem = async (data: {
           });
 
           const imgsLinkArray = await Promise.all(
-            (item.images ?? []).map(async (img: any) => {
+            (Array.isArray(item.images) ? item.images : []).map(async (img: any) => {
               if (img.includes('https://')) {
                 return img;
               } else {
@@ -164,14 +149,99 @@ export const createCaseAndSeizedItem = async (data: {
       return { resData, allResData };
     });
 
-    // console.log('Transaction successful:', result);
-    return result;
-  }
-  catch (error) {
-    console.log(error, "error");
+    // Generate QR code for case
+    const qrCodePath = await generateQRCode(resData.case_id, 'case');
 
-    return { message: "Error in creating case", error };
-  }
+    // Update case with QR code
+    await prisma.caseReg.update({
+      where: { case_id: resData.case_id },
+      data: {
+        QRbase64: qrCodePath || '',
+      },
+    });
+
+    const imgsLinkArray = await Promise.all(
+
+      (data.images ?? []).map(async (img: any) => {
+
+        const createdImg = await uploadItemImage(img);
+
+        return createdImg;
+      })
+    );
+
+    await prisma.caseReg.update({
+      where: { case_id: resData.case_id },
+      data: { images: imgsLinkArray }
+    });
+
+
+    // Handle seized items
+    const allResData = await Promise.all(
+      data.seize_item_info.map(async (item) => {
+        const createdItem = await prisma.seizedItems.create({
+          data: {
+            case_id: resData.case_id,
+            item_category: item.item_category,
+            sub_category: item.sub_category,
+            item_description: item.item_description,
+            seized_date: item.seized_date,
+            seized_location: item.seized_location,
+            seizing_officer: item.seizing_officer,
+            current_status: item.current_status,
+            release_date: item.release_date,
+            released_to: item.released_to,
+            remarks: item.remarks,
+            Bhag: item.Bhag,
+            depositDate: item.depositDate,
+            fromWhomReceived: item.fromWhomReceived,
+            weight: item.weight,
+            NoOfItems: item.NoOfItems,
+            itemStateDescription: item.itemStateDescription,
+            price: item.price
+          },
+        });
+
+        const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id, 'seizedItem');
+
+        await prisma.seizedItems.update({
+          where: { item_id: createdItem.item_id },
+          data: {
+            QRbase64: qrCodePathSeizedItem || '',
+          },
+        });
+
+        const imgsLinkArray = await Promise.all(
+          (item.images ?? []).map(async (img: any) => {
+            if (img.includes('https://')) {
+              return img;
+            } else {
+              const createdImg = await uploadItemImage(img);
+              return createdImg;
+            }
+          })
+        );
+
+        await prisma.seizedItems.update({
+          where: { item_id: createdItem.item_id },
+          data: { images: imgsLinkArray }
+        });
+
+        return createdItem;
+      })
+    );
+
+    return { resData, allResData };
+  });
+
+  // console.log('Transaction successful:', result);
+  return result;
+}
+  catch (error) {
+  console.log(error, "error");
+
+  return { message: "Error in creating case", error };
+}
 };
 
 export const getCase = async (id: string) => {
