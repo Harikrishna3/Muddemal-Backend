@@ -5,199 +5,200 @@ import { deleteUploadedImage, uploadItemImage } from '../utils/uploadItemImage';
 
 export const createCaseAndSeizedItem = async (data: {
   year: number;
-    case_number: string;
-    case_description: string;
-    policeStationId: string;
-    investigating_officer: string;
-    case_status: string;
-    filing_date:string;
-    acts: any;
-    bhags:any;
-    guilty_details:string;
-    region:string;
-    crime_number:string;
-    court_order: string;
-    closure_date?: string;
-    acquire_date: string;
-    seized_date: string;
-    userId: string;
-    images: any;
-    seize_item_info: [
-          {case_id: string;
-          item_category: string;
-          sub_category: string;
-          item_description: string;
-          seized_date: string;
-          seized_location: string;     
-          seizing_officer: string;
-          current_status: string;
-          release_date: string;
-          released_to: string;
-          remarks: string;
-          Bhag?: string;
-          depositDate?: string;
-          fromWhomReceived?: string;
-          weight?: string;
-          NoOfItems?: string;
-          itemStateDescription?: any;
-          images: any;
-          price?: string; 
-        }
-    ];
+  case_number: string;
+  case_description: string;
+  policeStationId: string;
+  investigating_officer: string;
+  case_status: string;
+  filing_date: string;
+  acts: any;
+  bhags: any;
+  guilty_details: string;
+  region: string;
+  crime_number: string;
+  court_order: string;
+  closure_date?: string;
+  acquire_date: string;
+  seized_date: string;
+  userId: string;
+  images: any;
+  seize_item_info: [
+    {
+      case_id: string;
+      item_category: string;
+      sub_category: string;
+      item_description: string;
+      seized_date: string;
+      seized_location: string;
+      seizing_officer: string;
+      current_status: string;
+      release_date: string;
+      released_to: string;
+      remarks: string;
+      Bhag?: string;
+      depositDate?: string;
+      fromWhomReceived?: string;
+      weight?: string;
+      NoOfItems?: string;
+      itemStateDescription?: any;
+      images: any;
+      price?: string;
+    }
+  ];
 }) => {
-    try{
-      const result = await prisma.$transaction(async (prisma) => {
-        // Create the case
-        const resData = await prisma.caseReg.create({
-          data: {
-            year: data.year,
-            case_number: data.case_number,
-            case_description: data.case_description,
-            policeStation: {
-              connect: {
-                id: data.policeStationId,
-              },
-            },
-            investigating_officer: data.investigating_officer,
-            case_status: data.case_status,
-            crime_number:data.crime_number,
-            guilty_details:data.guilty_details,
-            region:data.region,
-            acts: data.acts,
-            filing_date: data.filing_date,
-            closure_date: data.closure_date,
-            acquire_date: data.acquire_date,
-            seized_date: data.seized_date,
-            bhags: data.bhags,
-            court_order: data.court_order,
-            user: {
-              connect: {
-                id: data.userId,
-              },
+  try {
+    const result = await prisma.$transaction(async (prisma) => {
+      // Create the case
+      const resData = await prisma.caseReg.create({
+        data: {
+          year: data.year,
+          case_number: data.case_number,
+          case_description: data.case_description,
+          policeStation: {
+            connect: {
+              id: data.policeStationId,
             },
           },
-        });
-  
-        // Generate QR code for case
-        const qrCodePath = await generateQRCode(resData.case_id, 'case');
-  
-        // Update case with QR code
-        await prisma.caseReg.update({
-          where: { case_id: resData.case_id },
-          data: {
-            QRbase64: qrCodePath || '',
+          investigating_officer: data.investigating_officer,
+          case_status: data.case_status,
+          crime_number: data.crime_number,
+          guilty_details: data.guilty_details,
+          region: data.region,
+          acts: data.acts,
+          filing_date: data.filing_date,
+          closure_date: data.closure_date,
+          acquire_date: data.acquire_date,
+          seized_date: data.seized_date,
+          bhags: data.bhags,
+          court_order: data.court_order,
+          user: {
+            connect: {
+              id: data.userId,
+            },
           },
-        });
-
-        const imgsLinkArray = await Promise.all(
-          
-          (data.images ?? []).map(async (img: any) => {
-            
-            const createdImg = await uploadItemImage(img);
-            
-            return createdImg;
-          })
-        );
-        
-        await prisma.caseReg.update({
-          where: { case_id: resData.case_id },
-          data: { images: imgsLinkArray }
-        });
-
-
-        // Handle seized items
-        const allResData = await Promise.all(
-          data.seize_item_info.map(async (item) => {
-            const createdItem = await prisma.seizedItems.create({
-              data: {
-                case_id: resData.case_id,
-                item_category: item.item_category,
-                sub_category: item.sub_category,
-                item_description: item.item_description,
-                seized_date: item.seized_date,
-                seized_location: item.seized_location,
-                seizing_officer: item.seizing_officer,
-                current_status: item.current_status,
-                release_date: item.release_date,
-                released_to: item.released_to,
-                remarks: item.remarks,
-                Bhag: item.Bhag,
-                depositDate: item.depositDate,
-                fromWhomReceived: item.fromWhomReceived,
-                weight: item.weight,
-                NoOfItems: item.NoOfItems,
-                itemStateDescription: item.itemStateDescription,
-                price: item.price
-              },
-            });
-  
-            const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id, 'seizedItem');
-  
-            await prisma.seizedItems.update({
-              where: { item_id: createdItem.item_id },
-              data: {
-                QRbase64: qrCodePathSeizedItem || '',
-              },
-            });
-
-            const imgsLinkArray = await Promise.all(
-              (item.images ?? []).map(async (img: any) => {
-                if (img.includes('https://')) {
-                  return img;
-                } else {
-                  const createdImg = await uploadItemImage(img);
-                  return createdImg;
-                }
-              })
-            );
-            
-            await prisma.seizedItems.update({
-              where: { item_id: createdItem.item_id },
-              data: { images: imgsLinkArray }
-            });
-  
-            return createdItem;
-          })
-        );
-  
-        return { resData, allResData };
+        },
       });
-  
-      // console.log('Transaction successful:', result);
-      return result;
-    }
-    catch(error){
-      console.log(error,"error");
-      
-        return {message: "Error in creating case", error};
-    }
+
+      // Generate QR code for case
+      const qrCodePath = await generateQRCode(resData.case_id, 'case');
+
+      // Update case with QR code
+      await prisma.caseReg.update({
+        where: { case_id: resData.case_id },
+        data: {
+          QRbase64: qrCodePath || '',
+        },
+      });
+
+      const imgsLinkArray = await Promise.all(
+
+        (data.images ?? []).map(async (img: any) => {
+
+          const createdImg = await uploadItemImage(img);
+
+          return createdImg;
+        })
+      );
+
+      await prisma.caseReg.update({
+        where: { case_id: resData.case_id },
+        data: { images: imgsLinkArray }
+      });
+
+
+      // Handle seized items
+      const allResData = await Promise.all(
+        data.seize_item_info.map(async (item) => {
+          const createdItem = await prisma.seizedItems.create({
+            data: {
+              case_id: resData.case_id,
+              item_category: item.item_category,
+              sub_category: item.sub_category,
+              item_description: item.item_description,
+              seized_date: item.seized_date,
+              seized_location: item.seized_location,
+              seizing_officer: item.seizing_officer,
+              current_status: item.current_status,
+              release_date: item.release_date,
+              released_to: item.released_to,
+              remarks: item.remarks,
+              Bhag: item.Bhag,
+              depositDate: item.depositDate,
+              fromWhomReceived: item.fromWhomReceived,
+              weight: item.weight,
+              NoOfItems: item.NoOfItems,
+              itemStateDescription: item.itemStateDescription,
+              price: item.price
+            },
+          });
+
+          const qrCodePathSeizedItem = await generateQRCode(createdItem.item_id, 'seizedItem');
+
+          await prisma.seizedItems.update({
+            where: { item_id: createdItem.item_id },
+            data: {
+              QRbase64: qrCodePathSeizedItem || '',
+            },
+          });
+
+          const imgsLinkArray = await Promise.all(
+            (item.images ?? []).map(async (img: any) => {
+              if (img.includes('https://')) {
+                return img;
+              } else {
+                const createdImg = await uploadItemImage(img);
+                return createdImg;
+              }
+            })
+          );
+
+          await prisma.seizedItems.update({
+            where: { item_id: createdItem.item_id },
+            data: { images: imgsLinkArray }
+          });
+
+          return createdItem;
+        })
+      );
+
+      return { resData, allResData };
+    });
+
+    // console.log('Transaction successful:', result);
+    return result;
+  }
+  catch (error) {
+    console.log(error, "error");
+
+    return { message: "Error in creating case", error };
+  }
 };
 
 export const getCase = async (id: string) => {
-    try {
-      return await prisma.caseReg.findUnique({
-        where: {
-          case_id: id, 
-        },
-      });
-    } catch {
-      return { message: "Case not found" };
-    }
-  };
-  
+  try {
+    return await prisma.caseReg.findUnique({
+      where: {
+        case_id: id,
+      },
+    });
+  } catch {
+    return { message: "Case not found" };
+  }
+};
 
-export const getAllCases = async (userId:string) => {
-    try {
-      const cases = await prisma.caseReg.findMany({
-        where: { userId },
-        include: {
-          seizedItems: true,
-        },
-      });
-      return cases;
-  }catch(error){
-    console.log(error,"error");
-    return {message: "Error in fetching cases"};
+
+export const getAllCases = async (userId: string) => {
+  try {
+    const cases = await prisma.caseReg.findMany({
+      where: { userId },
+      include: {
+        seizedItems: true,
+      },
+    });
+    return cases;
+  } catch (error) {
+    console.log(error, "error");
+    return { message: "Error in fetching cases" };
   }
 };
 
@@ -262,6 +263,8 @@ export const updateCase = async (data: {
       // });
 
       // Create new case
+      console.log("guilty_details", data.guilty_details);
+
       const newCase = await prisma.caseReg.update({
         where: { case_id: data.case_id },
         data: {
@@ -303,18 +306,18 @@ export const updateCase = async (data: {
       // });
 
       const imgsLinkArray = await Promise.all(
-          
+
         data.images?.map(async (img: any) => {
-          if(img.includes('https://')){
+          if (img.includes('https://')) {
             return img;
-          }else{
+          } else {
             const createdImg = await uploadItemImage(img);
             return createdImg;
           }
-          
+
         })
       );
-      
+
       await prisma.caseReg.update({
         where: { case_id: newCase.case_id },
         data: { images: imgsLinkArray }
@@ -323,19 +326,19 @@ export const updateCase = async (data: {
       const existingItems = await prisma.seizedItems.findMany({
         where: { case_id: data.case_id },
       });
-      
+
       const incomingItemIds = data?.seize_item_info?.map((item) => item.item_id);
       const existingItemIds = existingItems?.map((item) => item.item_id);
-      
+
       // Step 2: Delete removed items
       const itemsToDelete = existingItemIds?.filter(id => !incomingItemIds?.includes(id));
-      
+
       await prisma.seizedItems.deleteMany({
         where: {
           item_id: { in: itemsToDelete }
         }
       });
-      
+
 
       // Handle seized items
       const newSeizedItems = await Promise.all(
@@ -395,15 +398,15 @@ export const updateCase = async (data: {
           });
 
           const imgsLinkArray = await Promise.all(
-          
+
             item.images?.map(async (img: any) => {
-              
+
               const createdImg = await uploadItemImage(img);
-              
+
               return createdImg;
             })
           );
-          
+
           await prisma.seizedItems.update({
             where: { item_id: createdItem.item_id },
             data: { images: imgsLinkArray }
@@ -420,15 +423,15 @@ export const updateCase = async (data: {
   } catch (error) {
     console.log(error, "error");
 
-       // Rollback manually for uploads
-       for (const img of data.images) {
+    // Rollback manually for uploads
+    for (const img of data.images) {
+      await deleteUploadedImage(img);
+    }
+    for (const item of data.seize_item_info) {
+      for (const img of item.images) {
         await deleteUploadedImage(img);
       }
-      for (const item of data.seize_item_info) {
-        for (const img of item.images) {
-          await deleteUploadedImage(img);
-        }
-      }
+    }
     return { message: "Error in updating case", error };
   }
 };
@@ -439,8 +442,8 @@ export const getCaseStatusCount = async (userId: string) => {
       where: { userId },
       select: { case_id: true, case_status: true }
     });
-    console.log(userId, "userId","getCaseStatusCount");
-    
+    console.log(userId, "userId", "getCaseStatusCount");
+
 
     let openCases = 0;
     let closedCases = 0;

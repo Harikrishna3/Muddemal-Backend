@@ -7,7 +7,7 @@ export const createLogs = async (
   actionType: ActionType,
   changedData: any
 ) => {
-    
+
   try {
     await prisma.logs.create({
       data: {
@@ -15,10 +15,10 @@ export const createLogs = async (
         entityId,
         actionType,
         changedData,
-        userId: "742f0764-3fa5-4683-a3c7-1ec91c16b6fe",
+        userId: "db46bdb1-cb73-4811-8ec1-7ad56a4b8204",
       },
     });
-  } catch(error) {
+  } catch (error) {
     console.error("Error logging action:", error);
   }
 };
@@ -37,11 +37,11 @@ export const getCaseIdCrimeNoCaseNo = async () => {
   try {
     const caseId = await prisma.caseReg.findMany({
       select: {
-      case_id: true,
-      case_number: true,
-      crime_number: true,
+        case_id: true,
+        case_number: true,
+        crime_number: true,
       }
-      
+
     });
     return caseId;
   } catch (error) {
